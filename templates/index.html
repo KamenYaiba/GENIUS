@@ -25,10 +25,18 @@
   {
     "text": "Why do leaves change color in fall?",
     "type": "explanation"
+  },
+  {
+    "text": "Which animal is a mammal?",
+    "type": "multiple_choice",
+    "options": ["Fish", "Bird", "Cat", "Snake"]
   }
 ]
                 </textarea>
-                <p class="help-text">Format: Array of question objects with "text" and "type" properties.</p>
+                <p class="help-text">
+                    Format: Array of question objects with "text" and "type" properties. 
+                    For multiple choice questions, include "options" as an array.
+                </p>
             </div>
             
             <div class="form-group">
@@ -42,6 +50,10 @@
   "1": {
     "correct_answer": "Leaves change color when they stop making chlorophyll",
     "points": 5
+  },
+  "2": {
+    "correct_answer": "Cat",
+    "points": 2
   }
 }
                 </textarea>

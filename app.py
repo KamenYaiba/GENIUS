@@ -1,16 +1,16 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 import json
 import os
 import uuid
 import google.generativeai as genai
-from datetime import datetime
+from gtts import gTTS  # Google Text-to-Speech
+from keys import GEMINI_KEY
 
 app = Flask(__name__)
 app.secret_key = "student_assessment_tool"  # For session management
 
 # Configure Gemini API
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyAM7jWVmZ5jVYMtcOZ3pWMfhBbX_l9rdGY")
-genai.configure(api_key=GEMINI_API_KEY)
+genai.configure(api_key=GEMINI_KEY)
 gemini_model = genai.GenerativeModel('gemini-2.0-flash')
 
 
@@ -107,6 +107,49 @@ def results():
 
     return render_template('results.html', results=results,
                            total_score=total_score, max_score=max_score)
+
+
+@app.route('/text-to-speech', methods=['POST'])
+def text_to_speech():
+    """Generate speech from text"""
+    data = request.get_json()
+    text = data.get('text', '')
+
+    if not text:
+        return jsonify({'error': 'No text provided'}), 400
+
+    try:
+        # Generate speech using gTTS
+        tts = gTTS(text=text, lang='en', slow=False)
+
+        # Save to a temporary file
+        temp_filename = f"temp_{uuid.uuid4()}.mp3"
+        temp_path = os.path.join("static", "audio", temp_filename)
+
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(temp_path), exist_ok=True)
+
+        tts.save(temp_path)
+
+        # Return the audio file URL
+        audio_url = url_for('static', filename=f'audio/{temp_filename}')
+        return jsonify({'audio_url': audio_url})
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/process-speech', methods=['POST'])
+def process_speech():
+    """Process speech data from the client"""
+    data = request.get_json()
+    question_id = data.get('question_id')
+    speech_text = data.get('speech_text', '')
+
+    if not speech_text:
+        return jsonify({'error': 'No speech data provided'}), 400
+
+    return jsonify({'success': True, 'text': speech_text})
 
 
 def rephrase_question(question_text):
