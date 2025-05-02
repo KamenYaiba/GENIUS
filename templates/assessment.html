@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Answer the Questions</h1>
+        <p>If you don't understand a question, click the "Help me understand" button.</p>
+        
+        <form method="post">
+            {% for question in questions %}
+            {% set question_index = loop.index0 %}
+            <div class="question-card">
+                <h3>Question {{ loop.index }}</h3>
+                
+                <!-- Original or rephrased question -->
+                <p class="question-text">
+                    {% if question.get('rephrased') %}
+                    <strong>Simpler version:</strong> {{ question.get('rephrased') }}
+                    <br><small>(Original: {{ question.text }})</small>
+                    {% else %}
+                    {{ question.text }}
+                    {% endif %}
+                </p>
+                
+                <!-- Help buttons -->
+                <div class="help-buttons">
+                    <button type="submit" name="help_{{ question_index }}" value="simplify">
+                        Help me understand this question
+                    </button>
+                    
+                    <!-- No JavaScript speech, just simple HTML for the prototype -->
+                    <p class="help-text">
+                        <small>If you need to hear the question, ask your teacher for help.</small>
+                    </p>
+                </div>
+                
+                <!-- Answer input -->
+                <div class="answer-section">
+                    {% if question.type == 'multiple_choice' %}
+                        <select name="answer_{{ question_index }}">
+                            <option value="">Select your answer</option>
+                            {% for option in question.options %}
+                            <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <textarea 
+                            name="answer_{{ question_index }}" 
+                            rows="4" 
+                            placeholder="Write your answer here">{{ current_answers.get('answer_' ~ question_index, '') if current_answers else '' }}</textarea>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="submit-button">Submit All Answers</button>
+        </form>
+    </div>
+</body>
+</html>

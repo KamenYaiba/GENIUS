@@ -1,0 +1,114 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2, h3 {
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+textarea, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button, .button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+    text-decoration: none;
+}
+
+button:hover, .button:hover {
+    background-color: #45a049;
+}
+
+.question-card, .result-card {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.question-text {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.help-buttons {
+    margin-bottom: 15px;
+}
+
+.help-text {
+    color: #666;
+    font-style: italic;
+}
+
+.answer-section {
+    margin-top: 10px;
+}
+
+.summary {
+    background-color: #e9f7ef;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.evaluation {
+    background-color: #f0f9ff;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.score-edit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    background-color: #ffeeee;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.submit-button {
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+}

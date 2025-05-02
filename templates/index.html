@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assessment Tool - Upload Questions</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Understanding Assessment Tool</h1>
+        <h2>Upload Questions and Answers</h2>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="post">
+            <div class="form-group">
+                <label for="questions_json">Questions (JSON format):</label>
+                <textarea id="questions_json" name="questions_json" rows="10" required>
+[
+  {
+    "text": "What do plants need to grow?",
+    "type": "short_answer"
+  },
+  {
+    "text": "Why do leaves change color in fall?",
+    "type": "explanation"
+  }
+]
+                </textarea>
+                <p class="help-text">Format: Array of question objects with "text" and "type" properties.</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="answers_json">Answers (JSON format):</label>
+                <textarea id="answers_json" name="answers_json" rows="10" required>
+{
+  "0": {
+    "correct_answer": ["water", "sunlight", "soil"],
+    "points": 3
+  },
+  "1": {
+    "correct_answer": "Leaves change color when they stop making chlorophyll",
+    "points": 5
+  }
+}
+                </textarea>
+                <p class="help-text">Format: Object with question indices as keys, each with "correct_answer" and "points" properties.</p>
+            </div>
+            
+            <button type="submit">Create Assessment</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assessment Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Assessment Results</h1>
+        <div class="summary">
+            <h2>Total Score: {{ total_score }} / {{ max_score }}</h2>
+            <p>{{ (total_score / max_score * 100)|round(1) }}%</p>
+        </div>
+        
+        <form method="post">
+            {% for question_id, result in results.items() %}
+            <div class="result-card">
+                <h3>Question {{ question_id|int + 1 }}</h3>
+                <p><strong>Question:</strong> {{ result.question }}</p>
+                <p><strong>Student's Answer:</strong> {{ result.student_answer }}</p>
+                <div class="evaluation">
+                    <p><strong>AI Feedback:</strong> {{ result.evaluation.feedback }}</p>
+                    <div class="score-edit">
+                        <label for="score_{{ question_id }}">Score:</label>
+                        <input 
+                            type="number" 
+                            id="score_{{ question_id }}" 
+                            name="score_{{ question_id }}" 
+                            value="{{ result.evaluation.score }}" 
+                            min="0" 
+                            max="{{ result.evaluation.max_score }}">
+                        <span>/ {{ result.evaluation.max_score }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <button type="submit" class="submit-button">Update Scores</button>
+        </form>
+        
+        <a href="{{ url_for('index') }}" class="button">Start New Assessment</a>
+    </div>
+</body>
+</html>
