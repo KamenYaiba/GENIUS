@@ -1,235 +1,296 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Student Assessment</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Assessment Interface</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='modern-style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Answer the Questions</h1>
-        <p>If you don't understand a question, click the "Help me understand" button.</p>
+    <div class="app-container">
+        <div class="backdrop"></div>
         
-        <form method="post">
-            {% for question in questions %}
-            {% set question_index = loop.index0 %}
-            <div class="question-card">
-                <h3>Question {{ loop.index }}</h3>
-                
-                <!-- Original or rephrased question -->
-                <p class="question-text">
-                    {% if question.get('rephrased') %}
-                    <strong>Simpler version:</strong> {{ question.get('rephrased') }}
-                    <br><small>(Original: {{ question.text }})</small>
-                    {% else %}
-                    {{ question.text }}
-                    {% endif %}
-                </p>
-                
-                <!-- Read Aloud Button -->
-                <div class="help-buttons">
-                    <button type="button" class="read-aloud-btn" data-question-id="{{ question_index }}">
-                        <img src="{{ url_for('static', filename='images/speaker.png') }}" alt="Speaker Icon" class="icon">
-                        Read Question Aloud
-                    </button>
-                    
-                    <button type="submit" name="help_{{ question_index }}" value="simplify">
-                        Help me understand this question
-                    </button>
-                </div>
-                
-                <!-- Answer input -->
-                <div class="answer-section">
-                    {% if question.type == 'multiple_choice' %}
-                        <div class="multiple-choice-container">
-                            <select id="select_{{ question_index }}" name="answer_{{ question_index }}" class="mc-select">
-                                <option value="">Select your answer</option>
-                                {% for option in question.options %}
-                                <option value="{{ option }}">{{ option }}</option>
-                                {% endfor %}
-                            </select>
-                            
-                            <!-- Read options aloud button -->
-                            <button type="button" class="read-options-btn" data-question-id="{{ question_index }}">
-                                <img src="{{ url_for('static', filename='images/speaker.png') }}" alt="Speaker Icon" class="icon">
-                                Read Options
-                            </button>
-                        </div>
-                    {% else %}
-                        <div class="text-answer-container">
-                            <textarea 
-                                id="answer_{{ question_index }}"
-                                name="answer_{{ question_index }}" 
-                                rows="4" 
-                                placeholder="Write your answer here">{{ current_answers.get('answer_' ~ question_index, '') if current_answers else '' }}</textarea>
-                            
-                            <!-- Speech-to-text button -->
-                            <button type="button" class="speech-to-text-btn" data-question-id="{{ question_index }}">
-                                <img src="{{ url_for('static', filename='images/mic.png') }}" alt="Microphone Icon" class="icon">
-                                Speak Your Answer
-                            </button>
-                        </div>
-                    {% endif %}
-                </div>
+        <header>
+            <div class="logo-container">
+                <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                <h1>Smart<span>Assessment</span></h1>
             </div>
-            {% endfor %}
-            
-            <button type="submit" class="submit-button">Submit All Answers</button>
-        </form>
-    </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%"></div>
+                </div>
+                <span class="progress-text">0/{{ questions|length }} answered</span>
+            </div>
+        </header>
 
-    <!-- Audio element for text-to-speech playback -->
-    <audio id="tts-audio" style="display:none;"></audio>
-    
-    <!-- Speech recognition status -->
-    <div id="speech-status" class="speech-status" style="display:none;">
-        <div class="pulse-ring"></div>
-        <p>Listening...</p>
-        <button id="stop-listening" type="button">Stop</button>
+        <main class="questions-container">
+            <form method="post" id="assessment-form">
+                {% for question in questions %}
+                {% set question_index = loop.index0 %}
+                <div class="question-card" id="question-card-{{ question_index }}" {% if not loop.first %}style="display:none"{% endif %}>
+                    <div class="question-number">Question {{ loop.index }} of {{ questions|length }}</div>
+                    
+                    <div class="question-content">
+                        <!-- Original or rephrased question -->
+                        <h2 class="question-text" id="question-text-{{ question_index }}">
+                            {% if question.get('rephrased') %}
+                            {{ question.get('rephrased') }}
+                            <div class="original-question">Original: {{ question.text }}</div>
+                            {% else %}
+                            {{ question.text }}
+                            {% endif %}
+                        </h2>
+                        
+                        <!-- Accessibility Tools -->
+                        <div class="accessibility-tools">
+                            <button type="button" class="accessibility-btn read-aloud-btn" data-question-id="{{ question_index }}">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Read Aloud</span>
+                            </button>
+                            
+                            <button type="submit" name="help_{{ question_index }}" value="simplify" class="accessibility-btn simplify-btn">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>Simplify Question</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Answer input -->
+                        <div class="answer-section">
+                            {% if question.type == 'multiple_choice' %}
+                                <div class="option-grid">
+                                    <input type="hidden" id="answer_{{ question_index }}" name="answer_{{ question_index }}" value="">
+                                    {% for option in question.options %}
+                                    <div class="option-box" data-value="{{ option }}" data-question="{{ question_index }}">
+                                        <div class="option-content">{{ option }}</div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-answer-container">
+                                    <textarea 
+                                        id="answer_{{ question_index }}"
+                                        name="answer_{{ question_index }}" 
+                                        rows="4" 
+                                        placeholder="Type your answer here...">{{ current_answers.get('answer_' ~ question_index, '') if current_answers else '' }}</textarea>
+                                    
+                                    <button type="button" class="voice-input-btn" data-question-id="{{ question_index }}">
+                                        <i class="fas fa-microphone"></i>
+                                        <span>Use Voice</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        {% if not loop.first %}
+                        <button type="button" class="nav-btn prev-btn" data-target="{{ question_index - 1 }}">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        {% endif %}
+                        
+                        {% if not loop.last %}
+                        <button type="button" class="nav-btn next-btn" data-target="{{ question_index + 1 }}">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                        {% else %}
+                        <button type="submit" class="submit-btn">
+                            Submit Assessment <i class="fas fa-check"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </form>
+        </main>
+
+        <!-- Audio element for text-to-speech playback -->
+        <audio id="tts-audio" style="display:none;"></audio>
+        
+        <!-- Speech recognition status -->
+        <div id="speech-status" class="speech-status">
+            <div class="pulse-animation"></div>
+            <p>Listening to your answer...</p>
+            <button id="stop-listening" type="button">Stop Recording</button>
+        </div>
     </div>
 
     <script>
-        // Text-to-Speech Function
-        function readTextAloud(text) {
-            fetch('/text-to-speech', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: text }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.audio_url) {
-                    const audio = document.getElementById('tts-audio');
-                    audio.src = data.audio_url;
-                    audio.play();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to read text aloud. Please try again.');
-            });
-        }
-
-        // Initialize Speech Recognition
-        function initSpeechRecognition(questionId) {
-            // Check if browser supports speech recognition
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Your browser does not support speech recognition. Try using Chrome or Edge.');
-                return;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track progress
+            const questionCards = document.querySelectorAll('.question-card');
+            const progressBar = document.querySelector('.progress');
+            const progressText = document.querySelector('.progress-text');
+            let answeredCount = 0;
+            
+            function updateProgress() {
+                // Count answers that have value
+                answeredCount = 0;
+                document.querySelectorAll('[id^="answer_"]').forEach(input => {
+                    if (input.value.trim() !== '') answeredCount++;
+                });
+                
+                const percentage = (answeredCount / questionCards.length) * 100;
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `${answeredCount}/${questionCards.length} answered`;
             }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
             
-            recognition.continuous = true;
-            recognition.interimResults = true;
-            recognition.lang = 'en-US';
+            // Navigation between questions
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetIndex = this.getAttribute('data-target');
+                    // Hide all cards
+                    questionCards.forEach(card => card.style.display = 'none');
+                    // Show target card
+                    document.getElementById(`question-card-${targetIndex}`).style.display = 'block';
+                    // Scroll to top
+                    window.scrollTo(0, 0);
+                });
+            });
             
-            // Show speech status
-            const speechStatus = document.getElementById('speech-status');
-            speechStatus.style.display = 'flex';
-            
-            let finalTranscript = '';
-            
-            recognition.onresult = function(event) {
-                let interimTranscript = '';
-                
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    const transcript = event.results[i][0].transcript;
+            // Multiple choice selection
+            document.querySelectorAll('.option-box').forEach(box => {
+                box.addEventListener('click', function() {
+                    const questionId = this.getAttribute('data-question');
+                    const value = this.getAttribute('data-value');
                     
-                    if (event.results[i].isFinal) {
-                        finalTranscript += transcript + ' ';
-                    } else {
-                        interimTranscript += transcript;
-                    }
-                }
-                
-                // Update the textarea or select dropdown based on question type
-                const questionType = document.getElementById(`answer_${questionId}`) ? 'text' : 'select';
-                
-                if (questionType === 'text') {
-                    document.getElementById(`answer_${questionId}`).value = finalTranscript;
-                } else {
-                    // Handle multiple choice by looking for the option word in the spoken text
-                    const selectElement = document.getElementById(`select_${questionId}`);
-                    const options = Array.from(selectElement.options).map(opt => opt.value.toLowerCase());
+                    // Remove selection from all options in this question
+                    document.querySelectorAll(`.option-box[data-question="${questionId}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
                     
-                    // Look for option words in the transcript
-                    const lowerTranscript = finalTranscript.toLowerCase();
-                    for (let i = 0; i < options.length; i++) {
-                        if (options[i] && lowerTranscript.includes(options[i].toLowerCase())) {
-                            selectElement.value = selectElement.options[i].value;
-                            break;
-                        }
-                    }
-                }
-            };
+                    // Select this option
+                    this.classList.add('selected');
+                    
+                    // Update hidden input value
+                    document.getElementById(`answer_${questionId}`).value = value;
+                    
+                    // Update progress
+                    updateProgress();
+                });
+            });
             
-            recognition.onend = function() {
-                speechStatus.style.display = 'none';
-            };
-            
-            // Start recognition
-            recognition.start();
-            
-            // Stop button functionality
-            document.getElementById('stop-listening').onclick = function() {
-                recognition.stop();
-                speechStatus.style.display = 'none';
-                
-                // Send the final transcript to the server for processing
-                fetch('/process-speech', {
+            // Text-to-Speech for questions and options
+            function readTextAloud(text) {
+                fetch('/text-to-speech', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ 
-                        question_id: questionId,
-                        speech_text: finalTranscript 
-                    }),
+                    body: JSON.stringify({ text: text }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.audio_url) {
+                        const audio = document.getElementById('tts-audio');
+                        audio.src = data.audio_url;
+                        audio.play();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to read text aloud. Please try again.');
                 });
-            };
+            }
             
-            return recognition;
-        }
-
-        // Add event listeners after DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Read Question Aloud buttons
-            const readAloudButtons = document.querySelectorAll('.read-aloud-btn');
-            readAloudButtons.forEach(button => {
+            // Read questions aloud (plus options for multiple choice)
+            document.querySelectorAll('.read-aloud-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const questionId = this.getAttribute('data-question-id');
-                    const questionElements = document.querySelectorAll('.question-text');
-                    const questionText = questionElements[questionId].textContent.trim();
-                    readTextAloud(questionText);
-                });
-            });
-            
-            // Read Options Aloud buttons (for multiple choice)
-            const readOptionsButtons = document.querySelectorAll('.read-options-btn');
-            readOptionsButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionId = this.getAttribute('data-question-id');
-                    const selectElement = document.getElementById(`select_${questionId}`);
+                    const questionText = document.getElementById(`question-text-${questionId}`).textContent.trim();
                     
-                    if (selectElement) {
-                        const options = Array.from(selectElement.options)
-                            .map(option => option.text)
-                            .filter(text => text !== 'Select your answer')
-                            .join('. ');
+                    // Check if this is a multiple choice question
+                    const optionBoxes = document.querySelectorAll(`.option-box[data-question="${questionId}"]`);
+                    
+                    if (optionBoxes.length > 0) {
+                        // Get all options
+                        const options = Array.from(optionBoxes).map(box => box.textContent.trim());
+                        const optionsText = options.join('. ');
                         
-                        readTextAloud(`Your options are: ${options}`);
+                        // Read question followed by options
+                        readTextAloud(`${questionText}. Your options are: ${optionsText}`);
+                    } else {
+                        // Just read the question
+                        readTextAloud(questionText);
                     }
                 });
             });
             
-            // Speech to Text buttons
-            const speechToTextButtons = document.querySelectorAll('.speech-to-text-btn');
+            // Speech-to-text functionality
             let currentRecognition = null;
             
-            speechToTextButtons.forEach(button => {
+            function initSpeechRecognition(questionId) {
+                // Check if browser supports speech recognition
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    alert('Your browser does not support speech recognition. Try using Chrome or Edge.');
+                    return;
+                }
+                
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+                
+                // Show speech status
+                const speechStatus = document.getElementById('speech-status');
+                speechStatus.style.display = 'flex';
+                
+                let finalTranscript = '';
+                
+                recognition.onresult = function(event) {
+                    let interimTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    // Update the textarea with the transcript
+                    const textarea = document.getElementById(`answer_${questionId}`);
+                    if (textarea) {
+                        textarea.value = finalTranscript;
+                        updateProgress();
+                    }
+                };
+                
+                recognition.onend = function() {
+                    speechStatus.style.display = 'none';
+                };
+                
+                // Start recognition
+                recognition.start();
+                
+                // Stop button functionality
+                document.getElementById('stop-listening').onclick = function() {
+                    recognition.stop();
+                    speechStatus.style.display = 'none';
+                    
+                    // Send the final transcript to the server for processing
+                    fetch('/process-speech', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            question_id: questionId,
+                            speech_text: finalTranscript 
+                        }),
+                    });
+                };
+                
+                return recognition;
+            }
+            
+            // Voice input buttons
+            document.querySelectorAll('.voice-input-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const questionId = this.getAttribute('data-question-id');
                     
@@ -241,6 +302,14 @@
                     // Start new recognition
                     currentRecognition = initSpeechRecognition(questionId);
                 });
+            });
+            
+            // Initialize progress bar
+            updateProgress();
+            
+            // Track textarea changes for progress updates
+            document.querySelectorAll('textarea').forEach(textarea => {
+                textarea.addEventListener('input', updateProgress);
             });
         });
     </script>
