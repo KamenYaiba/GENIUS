@@ -1,44 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Assessment Results</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='modern-style.css') }}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Assessment Results</h1>
-        <div class="summary">
-            <h2>Total Score: {{ total_score }} / {{ max_score }}</h2>
-            <p>{{ (total_score / max_score * 100)|round(1) }}%</p>
-        </div>
-        
-        <form method="post">
-            {% for question_id, result in results.items() %}
-            <div class="result-card">
-                <h3>Question {{ question_id|int + 1 }}</h3>
-                <p><strong>Question:</strong> {{ result.question }}</p>
-                <p><strong>Student's Answer:</strong> {{ result.student_answer }}</p>
-                <div class="evaluation">
-                    <p><strong>AI Feedback:</strong> {{ result.evaluation.feedback }}</p>
-                    <div class="score-edit">
-                        <label for="score_{{ question_id }}">Score:</label>
-                        <input 
-                            type="number" 
-                            id="score_{{ question_id }}" 
-                            name="score_{{ question_id }}" 
-                            value="{{ result.evaluation.score }}" 
-                            min="0" 
-                            max="{{ result.evaluation.max_score }}">
-                        <span>/ {{ result.evaluation.max_score }}</span>
-                    </div>
+    <div class="backdrop"></div>
+    <div class="app-container">
+        <header>
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h1>Assessment <span>Results</span></h1>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" style="width: {{ (total_score / max_score * 100)|round(1) }}%;"></div>
+                </div>
+                <div class="progress-text">
+                    <strong>{{ (total_score / max_score * 100)|round(1) }}%</strong> - {{ total_score }} / {{ max_score }} points
                 </div>
             </div>
-            {% endfor %}
-            
-            <button type="submit" class="submit-button">Update Scores</button>
-        </form>
-        
-        <a href="{{ url_for('index') }}" class="button">Start New Assessment</a>
+        </header>
+
+        <div class="questions-container">
+            <form method="post">
+                {% for question_id, result in results.items() %}
+                <div class="question-card result-card">
+                    <span class="question-number">Question {{ question_id|int + 1 }}</span>
+                    
+                    <div class="question-content">
+                        <h3 class="question-text">{{ result.question }}</h3>
+                    </div>
+                    
+                    <div class="answer-section">
+                        <h4><i class="fas fa-pen"></i> Student's Answer</h4>
+                        <div class="student-answer">
+                            <p>{{ result.student_answer }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h4><i class="fas fa-comment-alt"></i> AI Feedback</h4>
+                        <div class="ai-feedback">
+                            <p>{{ result.evaluation.feedback }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="score-section">
+                        <div class="score-edit">
+                            <label for="score_{{ question_id }}">Score:</label>
+                            <input 
+                                type="number" 
+                                id="score_{{ question_id }}" 
+                                name="score_{{ question_id }}" 
+                                value="{{ result.evaluation.score }}" 
+                                min="0" 
+                                max="{{ result.evaluation.max_score }}">
+                            <span>/ {{ result.evaluation.max_score }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="navigation-buttons">
+                    <a href="{{ url_for('index') }}" class="nav-btn prev-btn">
+                        <i class="fas fa-arrow-left"></i> New Assessment
+                    </a>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Update Scores
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <style>
+        /* Additional styles specific to the results page */
+        .result-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px var(--shadow-color);
+        }
+        
+        .student-answer, .ai-feedback {
+            background-color: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-feedback {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .student-answer {
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .answer-section h4, .feedback-section h4 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .answer-section h4 i {
+            color: var(--secondary-color);
+        }
+        
+        .feedback-section h4 i {
+            color: var(--primary-color);
+        }
+        
+        .score-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .score-edit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .score-edit input {
+            width: 70px;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            transition: border-color 0.2s ease;
+        }
+        
+        .score-edit input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .navigation-buttons {
+            margin-top: 40px;
+            margin-bottom: 60px;
+        }
+    </style>
 </body>
 </html>
