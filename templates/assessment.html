@@ -57,7 +57,24 @@
                         
                         <!-- Answer input -->
                         <div class="answer-section">
+                            {% if question.type == 'visual' %}
+                                <div class="visual-content">
+                                    {% if question.image_path %}
+                                        <img src="{{ url_for('static', filename=question.image_path) }}" class="preview-image" alt="Visual Question Image" style="max-width: 100%; border-radius: 8px;">
+                                    {% else %}
+                                        <div class="placeholder-image" style="background-color:#e9ecef;height:200px;display:flex;align-items:center;justify-content:center;border-radius:8px;">
+                                            <i class="fas fa-image" style="font-size:2rem;color:#adb5bd;"></i>
+                                        </div>
+                                    {% endif %}
+                                    {% if question.instructions %}
+                                        <div class="visual-instructions" style="margin-top:15px;padding:15px;background-color:#f8f9fa;border-radius:8px;">
+                                            <i class="fas fa-info-circle"></i> {{ question.instructions }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                             {% if question.type == 'multiple_choice' %}
+                                <!-- Existing multiple choice code remains unchanged -->
                                 <div class="option-grid">
                                     <input type="hidden" id="answer_{{ question_index }}" name="answer_{{ question_index }}" value="">
                                     {% for option in question.options %}
@@ -72,7 +89,7 @@
                                         id="answer_{{ question_index }}"
                                         name="answer_{{ question_index }}" 
                                         rows="4" 
-                                        placeholder="Type your answer here...">{{ current_answers.get('answer_' ~ question_index, '') if current_answers else '' }}</textarea>
+                                        placeholder="{% if question.type == 'visual' %}Discuss the visual with the AI here...{% else %}Type your answer here...{% endif %}">{{ current_answers.get('answer_' ~ question_index, '') if current_answers else '' }}</textarea>
                                     
                                     <button type="button" class="voice-input-btn" data-question-id="{{ question_index }}">
                                         <i class="fas fa-microphone"></i>

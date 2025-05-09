@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 import json
 import os
+from werkzeug.utils import secure_filename
 import uuid
 import google.generativeai as genai
 from gtts import gTTS  # Google Text-to-Speech
@@ -14,14 +15,33 @@ genai.configure(api_key=GEMINI_KEY)
 gemini_model = genai.GenerativeModel('gemini-2.0-flash')
 
 
+# Define upload folder
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """Instructor page to upload questions and answers"""
     if request.method == 'POST':
-        # Get questions and answers from form
         try:
             questions_data = json.loads(request.form.get('questions_json', '{}'))
             answers_data = json.loads(request.form.get('answers_json', '{}'))
+
+            # Process image uploads for visual questions
+            for idx, question in enumerate(questions_data):
+                if question.get('type') == 'visual' and f'image_{idx}' in request.files:
+                    file = request.files[f'image_{idx}']
+                    if file and file.filename:
+                        filename = secure_filename(file.filename)
+                        unique_filename = f"{uuid.uuid4()}_{filename}"
+                        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+                        file.save(file_path)
+                        # Store relative path in questions_data
+                        question['image_path'] = f"uploads/{unique_filename}"
 
             # Store in session
             session['questions'] = questions_data

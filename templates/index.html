@@ -7,7 +7,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='modern-style.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Additional styles for the improved interface */
+        /* Combined styles from both versions, prioritizing second version's cleaner design */
+        .create-assessment {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .intro-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 30px var(--shadow-color);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .intro-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
         .question-builder {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -15,139 +37,58 @@
             padding: 25px;
             margin-bottom: 30px;
         }
-        
-        .questions-container {
-            margin-bottom: 30px;
+
+        .question-list {
+            margin: 20px 0;
         }
-        
+
         .question-item {
             background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 8px;
+            padding: 15px;
             margin-bottom: 15px;
-            position: relative;
             border-left: 4px solid var(--primary-color);
         }
-        
-        .delete-question {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        
-        .form-row {
+
+        .question-item-header {
             display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .form-row .form-group {
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .add-option-btn, .add-question-btn {
-            display: inline-flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background-color: #e9ecef;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
+            margin-bottom: 10px;
         }
-        
-        .add-option-btn:hover, .add-question-btn:hover {
-            background-color: #dee2e6;
+
+        .question-number {
+            font-weight: 600;
+            color: var(--primary-color);
         }
-        
-        .add-question-btn {
-            background-color: var(--primary-color);
-            color: white;
-            margin-bottom: 25px;
-        }
-        
-        .add-question-btn:hover {
-            background-color: #2d6bce;
-        }
-        
-        .options-container {
+
+        .question-actions {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .option-row {
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
-        
-        .option-row input {
-            flex: 1;
-        }
-        
-        .remove-option {
+
+        .btn-action {
             background: none;
             border: none;
-            color: #dc3545;
             cursor: pointer;
+            font-size: 16px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
         }
-        
-        .form-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-weight: 500;
+
+        .btn-action:hover {
+            color: var(--primary-color);
         }
-        
-        input[type="text"], 
-        input[type="number"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+
+        .btn-action.delete:hover {
+            color: var(--accent-color);
         }
-        
-        input[type="text"]:focus, 
-        input[type="number"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .introduction-card {
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-            border-radius: var(--border-radius);
-            color: white;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .introduction-card h2 {
-            margin-bottom: 15px;
-        }
-        
+
         .tab-container {
             display: flex;
             margin-bottom: 30px;
         }
-        
+
         .tab {
             padding: 15px 25px;
             background-color: #f1f3f9;
@@ -157,19 +98,149 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .tab.active {
             background-color: white;
             border-bottom: 3px solid var(--primary-color);
             color: var(--primary-color);
         }
 
-        .question-type-info {
-            margin-top: 5px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        .form-group {
+            margin-bottom: 20px;
         }
-        
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .help-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .options-container {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-add-option, .btn-remove-option {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-size: 1rem;
+        }
+
+        .btn-add-option {
+            color: var(--primary-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-remove-option {
+            color: var(--accent-color);
+        }
+
+        .add-question-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .btn-add-question {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background-color: #f1f3f9;
+            border: 2px dashed var(--primary-color);
+            border-radius: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add-question:hover {
+            background-color: #e5e8f1;
+        }
+
+        .create-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .create-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .question-preview {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
         .file-upload-container {
             border: 2px dashed #e9ecef;
             border-radius: 8px;
@@ -178,22 +249,22 @@
             margin-top: 10px;
             transition: all 0.2s;
         }
-        
+
         .file-upload-container:hover {
             border-color: var(--primary-color);
             background-color: rgba(58, 134, 255, 0.03);
         }
-        
+
         .file-upload-container i {
             font-size: 2rem;
             color: var(--text-secondary);
             margin-bottom: 15px;
         }
-        
+
         .file-upload-container p {
             margin-bottom: 15px;
         }
-        
+
         .upload-btn {
             display: inline-flex;
             align-items: center;
@@ -207,11 +278,11 @@
             font-weight: 500;
             transition: all 0.2s;
         }
-        
+
         .upload-btn:hover {
             background-color: #2d6bce;
         }
-        
+
         .preview-image {
             max-width: 100%;
             max-height: 300px;
@@ -220,69 +291,88 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .error-message {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-message i {
+            color: #f44336;
+            font-size: 18px;
+        }
+
+        .correct-answer-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #e9ecef;
+        }
+
+        .expand-collapse {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .hidden {
             display: none;
         }
-        
-        .visual-question-fields {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e9ecef;
-        }
-        
-        .instructions-container {
-            margin-top: 15px;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .create-button {
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 15px 30px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 20px;
         }
-        
-        .create-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+
+        .modal-content {
+            background-color: white;
+            max-width: 900px; /* Increased from 700px to make the modal wider */
+            width: 100%;
+            margin: 20px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .question-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                margin: 10px;
+                padding: 20px;
+                max-width: 95%; /* Ensure modal is still responsive on smaller screens */
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="backdrop"></div>
-        
+
         <header>
             <div class="logo-container">
                 <div class="logo-icon"><i class="fas fa-brain"></i></div>
                 <h1>Smart<span>Assessment</span></h1>
             </div>
         </header>
-        
+
         <main class="create-assessment">
             {% if error %}
             <div class="error-message">
@@ -290,13 +380,13 @@
                 <p>{{ error }}</p>
             </div>
             {% endif %}
-            
-            <div class="introduction-card">
+
+            <div class="intro-card">
                 <h2><i class="fas fa-file-alt"></i> Create New Assessment</h2>
-                <p>Build your assessment by adding questions below. Support for multiple-choice, short answer, explanation, and visual questions with AI-powered assessment.</p>
+                <p>Build an interactive assessment with multiple-choice, short answer, explanation, or visual questions. Add questions and preview your assessment below.</p>
             </div>
-            
-            <form method="post" id="assessmentForm" enctype="multipart/form-data">
+
+            <form method="post" id="assessment-form" enctype="multipart/form-data">
                 <div class="tab-container">
                     <button type="button" class="tab active" id="builderTab">
                         <i class="fas fa-edit"></i> Question Builder
@@ -305,24 +395,29 @@
                         <i class="fas fa-eye"></i> Preview
                     </button>
                 </div>
-                
+
                 <div id="builderView">
-                    <button type="button" class="add-question-btn" id="addQuestionBtn">
-                        <i class="fas fa-plus"></i> Add New Question
-                    </button>
-                    
-                    <div id="questionsContainer" class="questions-container">
-                        <!-- Questions will be dynamically added here -->
+                    <div class="question-builder">
+                        <h3><i class="fas fa-list"></i> Questions</h3>
+                        <p>Add questions of different types to create your assessment.</p>
+                        <div id="question-list" class="question-list">
+                            <div class="empty-state" id="empty-state">
+                                <p style="text-align: center; color: var(--text-secondary); padding: 30px;">
+                                    <i class="fas fa-info-circle"></i> No questions added yet. Click the button below to add your first question.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="add-question-container">
+                            <button type="button" id="add-question-btn" class="btn-add-question">
+                                <i class="fas fa-plus-circle"></i> Add New Question
+                            </button>
+                        </div>
                     </div>
-                    
-                    <input type="hidden" id="questions_json" name="questions_json">
-                    <input type="hidden" id="answers_json" name="answers_json">
-                    
-                    <button type="submit" class="create-button" id="createAssessmentBtn">
+                    <button type="submit" class="create-button" id="create-btn">
                         <i class="fas fa-rocket"></i> Create Interactive Assessment
                     </button>
                 </div>
-                
+
                 <div id="previewView" style="display: none">
                     <div class="question-builder">
                         <h3>Assessment Preview</h3>
@@ -330,394 +425,668 @@
                             <!-- Preview will be generated here -->
                         </div>
                     </div>
-                    
                     <button type="button" class="create-button" id="backToEditBtn">
                         <i class="fas fa-edit"></i> Back to Editing
                     </button>
                 </div>
+
+                <input type="hidden" id="questions_json" name="questions_json" value="[]">
+                <input type="hidden" id="answers_json" name="answers_json" value="{}">
             </form>
+
+            <!-- Question Modal -->
+            <div id="question-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 id="modal-title">Add New Question</h3>
+                        <button id="close-modal" style="background: none; border: none; font-size: 18px; cursor: pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question-text">
+                            <i class="fas fa-question-circle"></i> Question Text
+                        </label>
+                        <textarea id="question-text" class="form-control" rows="3" placeholder="Enter your question here" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question-type">
+                            <i class="fas fa-list-ul"></i> Question Type
+                        </label>
+                        <select id="question-type" class="form-control">
+                            <option value="multiple_choice">Multiple Choice</option>
+                            <option value="short_answer">Short Answer</option>
+                            <option value="explanation">Explanation</option>
+                            <option value="visual">Visual Question</option>
+                        </select>
+                    </div>
+
+                    <div id="options-section" class="hidden">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-check-circle"></i> Options
+                            </label>
+                            <div id="options-container" class="options-container">
+                                <div class="option-row">
+                                    <input type="text" class="form-control option-input" placeholder="Option 1">
+                                    <button type="button" class="btn-remove-option">
+                                        <i class="fas fa-minus-circle"></i>
+                                    </button>
+                                </div>
+                                <div class="option-row">
+                                    <input type="text" class="form-control option-input" placeholder="Option 2">
+                                    <button type="button" class="btn-remove-option">
+                                        <i class="fas fa-minus-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" id="add-option-btn" class="btn-add-option">
+                                <i class="fas fa-plus-circle"></i> Add Option
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="visual-section" class="hidden">
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-image"></i> Upload Visual
+                            </label>
+                            <div class="file-upload-container">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop an image here or click to upload</p>
+                                <button type="button" class="upload-btn" id="image-upload-btn">
+                                    <i class="fas fa-upload"></i> Choose File
+                                </button>
+                                <input type="file" id="image-upload" class="form-control hidden" accept="image/*">
+                                <div id="image-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="visual-instructions">
+                                <i class="fas fa-info-circle"></i> Instructions for Students
+                            </label>
+                            <textarea id="visual-instructions" class="form-control" rows="3" placeholder="Example: Examine the diagram and answer questions about parts labeled A, B, and C."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="correct-answer-section">
+                        <div class="expand-collapse" id="toggle-answer-section">
+                            <i class="fas fa-chevron-down"></i> Correct Answer Information
+                        </div>
+                        <div id="answer-details" class="hidden">
+                            <div class="form-group">
+                                <label for="points">
+                                    <i class="fas fa-star"></i> Points
+                                </label>
+                                <input type="number" id="points" class="form-control" min="1" value="1">
+                            </div>
+                            <div id="correct-answer-container">
+                                <!-- Populated based on question type -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <button type="button" id="cancel-question-btn" style="padding: 10px 20px; border: 1px solid #e9ecef; background-color: white; border-radius: 8px; cursor: pointer;">
+                            Cancel
+                        </button>
+                        <button type="button" id="save-question-btn" style="padding: 10px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            Save Question
+                        </button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
-    
-    <!-- Question template (hidden) -->
-    <template id="questionTemplate">
-        <div class="question-item" data-question-index="{index}">
-            <button type="button" class="delete-question" title="Delete Question">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="question_text_{index}">
-                        <i class="fas fa-question-circle"></i> Question Text
-                    </label>
-                    <textarea id="question_text_{index}" class="question-text" rows="3" required></textarea>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="question_type_{index}">
-                        <i class="fas fa-list-ul"></i> Question Type
-                    </label>
-                    <select id="question_type_{index}" class="question-type" required>
-                        <option value="multiple_choice">Multiple Choice</option>
-                        <option value="short_answer">Short Answer</option>
-                        <option value="explanation">Explanation</option>
-                        <option value="visual">Visual Question</option>
-                    </select>
-                    <div class="question-type-info">
-                        Select the type of question you want to create
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="question_points_{index}">
-                        <i class="fas fa-star"></i> Points
-                    </label>
-                    <input type="number" id="question_points_{index}" class="question-points" min="1" value="1" required>
-                </div>
-            </div>
-            
-            <!-- Multiple choice options (conditionally shown) -->
-            <div class="multiple-choice-fields">
-                <label>
-                    <i class="fas fa-check-square"></i> Answer Options
-                </label>
-                <div class="options-container" id="options_container_{index}">
-                    <!-- Options will be added here -->
-                </div>
-                <button type="button" class="add-option-btn" data-index="{index}">
-                    <i class="fas fa-plus"></i> Add Option
-                </button>
-            </div>
-            
-            <!-- Visual question fields (conditionally shown) -->
-            <div class="visual-question-fields hidden">
-                <div class="form-group">
-                    <label>
-                        <i class="fas fa-image"></i> Upload Visual
-                    </label>
-                    <div class="file-upload-container">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <p>Drag & drop an image here or click to upload</p>
-                        <button type="button" class="upload-btn image-upload-btn" data-index="{index}">
-                            <i class="fas fa-upload"></i> Choose File
-                        </button>
-                        <input type="file" id="image_upload_{index}" class="image-input hidden" accept="image/*">
-                        <div class="image-preview" id="image_preview_{index}"></div>
-                    </div>
-                </div>
-                
-                <div class="instructions-container">
-                    <div class="form-group">
-                        <label for="visual_instructions_{index}">
-                            <i class="fas fa-info-circle"></i> Instructions for Students
-                        </label>
-                        <textarea id="visual_instructions_{index}" class="visual-instructions" rows="3" placeholder="Example: Examine the diagram and be prepared to answer questions about the parts labeled A, B, and C."></textarea>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Short answer fields (conditionally shown) -->
-            <div class="short-answer-fields">
-                <div class="form-group">
-                    <label for="correct_answer_{index}">
-                        <i class="fas fa-check-circle"></i> Correct Answer(s)
-                    </label>
-                    <textarea id="correct_answer_{index}" class="correct-answer" rows="2" placeholder="For multiple acceptable answers, separate with commas"></textarea>
-                    <div class="question-type-info">
-                        For short answers, you can provide multiple correct options separated by commas
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Explanation fields (conditionally shown) -->
-            <div class="explanation-fields">
-                <div class="form-group">
-                    <label for="explanation_answer_{index}">
-                        <i class="fas fa-check-circle"></i> Model Answer
-                    </label>
-                    <textarea id="explanation_answer_{index}" class="explanation-answer" rows="4" placeholder="Provide a sample correct answer that covers the key points"></textarea>
-                </div>
-            </div>
-        </div>
-    </template>
-    
-    <!-- Option template (hidden) -->
-    <template id="optionTemplate">
-        <div class="option-row">
-            <input type="text" class="option-text" placeholder="Enter option text">
-            <button type="button" class="remove-option">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    </template>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let questionCount = 0;
-            const questionsContainer = document.getElementById('questionsContainer');
-            const questionTemplate = document.getElementById('questionTemplate').content;
-            const optionTemplate = document.getElementById('optionTemplate').content;
-            const hiddenQuestionsField = document.getElementById('questions_json');
-            const hiddenAnswersField = document.getElementById('answers_json');
-            
+            // State management
+            let questions = [];
+            let answers = {};
+            let editingIndex = -1;
+            let imageFile = null;
+
+            // DOM elements
+            const questionList = document.getElementById('question-list');
+            const emptyState = document.getElementById('empty-state');
+            const addQuestionBtn = document.getElementById('add-question-btn');
+            const questionModal = document.getElementById('question-modal');
+            const closeModal = document.getElementById('close-modal');
+            const cancelBtn = document.getElementById('cancel-question-btn');
+            const saveQuestionBtn = document.getElementById('save-question-btn');
+            const questionText = document.getElementById('question-text');
+            const questionType = document.getElementById('question-type');
+            const optionsSection = document.getElementById('options-section');
+            const optionsContainer = document.getElementById('options-container');
+            const addOptionBtn = document.getElementById('add-option-btn');
+            const visualSection = document.getElementById('visual-section');
+            const imageUploadBtn = document.getElementById('image-upload-btn');
+            const imageUpload = document.getElementById('image-upload');
+            const imagePreview = document.getElementById('image-preview');
+            const visualInstructions = document.getElementById('visual-instructions');
+            const pointsInput = document.getElementById('points');
+            const correctAnswerContainer = document.getElementById('correct-answer-container');
+            const questionsJsonInput = document.getElementById('questions_json');
+            const answersJsonInput = document.getElementById('answers_json');
+            const toggleAnswerSection = document.getElementById('toggle-answer-section');
+            const answerDetails = document.getElementById('answer-details');
+            const modalTitle = document.getElementById('modal-title');
+            const builderTab = document.getElementById('builderTab');
+            const previewTab = document.getElementById('previewTab');
+            const builderView = document.getElementById('builderView');
+            const previewView = document.getElementById('previewView');
+            const backToEditBtn = document.getElementById('backToEditBtn');
+            const assessmentForm = document.getElementById('assessment-form');
+
             // Tab navigation
-            document.getElementById('builderTab').addEventListener('click', function() {
-                document.getElementById('builderView').style.display = 'block';
-                document.getElementById('previewView').style.display = 'none';
-                document.getElementById('builderTab').classList.add('active');
-                document.getElementById('previewTab').classList.remove('active');
+            builderTab.addEventListener('click', function() {
+                builderView.style.display = 'block';
+                previewView.style.display = 'none';
+                builderTab.classList.add('active');
+                previewTab.classList.remove('active');
             });
-            
-            document.getElementById('previewTab').addEventListener('click', function() {
+
+            previewTab.addEventListener('click', function() {
                 generatePreview();
-                document.getElementById('builderView').style.display = 'none';
-                document.getElementById('previewView').style.display = 'block';
-                document.getElementById('previewTab').classList.add('active');
-                document.getElementById('builderTab').classList.remove('active');
+                builderView.style.display = 'none';
+                previewView.style.display = 'block';
+                previewTab.classList.add('active');
+                builderTab.classList.remove('active');
             });
-            
-            document.getElementById('backToEditBtn').addEventListener('click', function() {
-                document.getElementById('builderView').style.display = 'block';
-                document.getElementById('previewView').style.display = 'none';
-                document.getElementById('builderTab').classList.add('active');
-                document.getElementById('previewTab').classList.remove('active');
+
+            backToEditBtn.addEventListener('click', function() {
+                builderView.style.display = 'block';
+                previewView.style.display = 'none';
+                builderTab.classList.add('active');
+                previewTab.classList.remove('active');
             });
-            
-            // Add question button
-            document.getElementById('addQuestionBtn').addEventListener('click', addNewQuestion);
-            
-            // Form submission
-            document.getElementById('assessmentForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                if (questionsContainer.children.length === 0) {
-                    alert('Please add at least one question to create an assessment.');
-                    return;
+
+            // Modal handling
+            function showModal() {
+                questionModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function hideModal() {
+                questionModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                resetModal();
+            }
+
+            function resetModal() {
+                questionText.value = '';
+                questionType.value = 'multiple_choice';
+                pointsInput.value = '1';
+                optionsContainer.innerHTML = `
+                    <div class="option-row">
+                        <input type="text" class="form-control option-input" placeholder="Option 1">
+                        <button type="button" class="btn-remove-option">
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
+                    </div>
+                    <div class="option-row">
+                        <input type="text" class="form-control option-input" placeholder="Option 2">
+                        <button type="button" class="btn-remove-option">
+                            <i class="fas fa-minus-circle"></i>
+                        </button>
+                    </div>
+                `;
+                visualInstructions.value = '';
+                imagePreview.innerHTML = '';
+                imageFile = null;
+                imageUpload.value = '';
+                updateQuestionType();
+                editingIndex = -1;
+                modalTitle.textContent = 'Add New Question';
+                answerDetails.classList.add('hidden');
+                toggleAnswerSection.querySelector('i').classList.add('fa-chevron-down');
+                toggleAnswerSection.querySelector('i').classList.remove('fa-chevron-up');
+            }
+
+            addQuestionBtn.addEventListener('click', function() {
+                resetModal();
+                showModal();
+            });
+
+            closeModal.addEventListener('click', hideModal);
+            cancelBtn.addEventListener('click', hideModal);
+
+            questionModal.addEventListener('click', function(e) {
+                if (e.target === questionModal) {
+                    hideModal();
                 }
-                
-                // Generate JSON data
-                const questionsData = [];
-                const answersData = {};
-                
-                Array.from(questionsContainer.children).forEach((questionItem, index) => {
-                    const questionIndex = questionItem.dataset.questionIndex;
-                    const questionType = questionItem.querySelector(`.question-type`).value;
-                    const questionText = questionItem.querySelector(`.question-text`).value;
-                    const points = parseInt(questionItem.querySelector(`.question-points`).value) || 1;
-                    
-                    // Question data
-                    const questionData = {
-                        text: questionText,
-                        type: questionType
-                    };
-                    
-                    // Answer data
-                    const answerData = {
-                        points: points
-                    };
-                    
-                    // Add type-specific data
-                    if (questionType === 'multiple_choice') {
-                        const options = [];
-                        questionItem.querySelectorAll('.option-text').forEach(option => {
-                            options.push(option.value);
-                        });
-                        questionData.options = options;
-                        
-                        // Get correct option - assuming it's the first one for now
-                        // In a real implementation, you'd have a way to mark the correct answer
-                        answerData.correct_answer = options[0] || '';
-                    } 
-                    else if (questionType === 'short_answer') {
-                        const correctAnswer = questionItem.querySelector('.correct-answer').value;
-                        // Split by commas and trim whitespace
-                        answerData.correct_answer = correctAnswer.split(',').map(ans => ans.trim());
-                    } 
-                    else if (questionType === 'explanation') {
-                        answerData.correct_answer = questionItem.querySelector('.explanation-answer').value;
-                    }
-                    else if (questionType === 'visual') {
-                        questionData.visual = true;
-                        questionData.instructions = questionItem.querySelector('.visual-instructions').value;
-                        // In a real implementation, you'd handle file uploads separately
-                        // For now, we'll just note that there should be an image
-                        questionData.has_image = true;
-                        answerData.correct_answer = "This is a visual question evaluated through conversation";
-                    }
-                    
-                    questionsData.push(questionData);
-                    answersData[index.toString()] = answerData;
-                });
-                
-                // Set hidden fields
-                hiddenQuestionsField.value = JSON.stringify(questionsData);
-                hiddenAnswersField.value = JSON.stringify(answersData);
-                
-                // Submit the form
-                this.submit();
             });
-            
-            // Add a sample question on page load
-            addNewQuestion();
-            
-            // Function to add a new question
-            function addNewQuestion() {
-                const newQuestion = document.importNode(questionTemplate, true);
-                const index = questionCount++;
-                
-                // Replace all placeholders with the current index
-                newQuestion.querySelectorAll('[id$="{index}"]').forEach(el => {
-                    el.id = el.id.replace('{index}', index);
-                });
-                
-                newQuestion.querySelectorAll('[data-index="{index}"]').forEach(el => {
-                    el.dataset.index = index;
-                });
-                
-                newQuestion.querySelector('.question-item').dataset.questionIndex = index;
-                
-                // Add two default options for multiple choice
-                const optionsContainer = newQuestion.querySelector(`#options_container_${index}`);
-                addOption(optionsContainer);
-                addOption(optionsContainer);
-                
-                // Add event listeners
-                const questionItem = newQuestion.querySelector('.question-item');
-                
-                // Delete question button
-                questionItem.querySelector('.delete-question').addEventListener('click', function() {
-                    if (confirm('Are you sure you want to delete this question?')) {
-                        questionItem.remove();
+
+            // Toggle answer section
+            toggleAnswerSection.addEventListener('click', function() {
+                answerDetails.classList.toggle('hidden');
+                toggleAnswerSection.querySelector('i').classList.toggle('fa-chevron-down');
+                toggleAnswerSection.querySelector('i').classList.toggle('fa-chevron-up');
+            });
+
+            // Options handling
+            addOptionBtn.addEventListener('click', function() {
+                const optionCount = optionsContainer.querySelectorAll('.option-row').length + 1;
+                const optionRow = document.createElement('div');
+                optionRow.className = 'option-row';
+                optionRow.innerHTML = `
+                    <input type="text" class="form-control option-input" placeholder="Option ${optionCount}">
+                    <button type="button" class="btn-remove-option">
+                        <i class="fas fa-minus-circle"></i>
+                    </button>
+                `;
+                optionsContainer.appendChild(optionRow);
+                updateCorrectOptionRadios();
+            });
+
+            optionsContainer.addEventListener('click', function(e) {
+                if (e.target.closest('.btn-remove-option')) {
+                    const optionRow = e.target.closest('.option-row');
+                    if (optionsContainer.querySelectorAll('.option-row').length > 1) {
+                        optionsContainer.removeChild(optionRow);
+                        updateOptionsPlaceholders();
+                        updateCorrectOptionRadios();
                     }
+                }
+            });
+
+            optionsContainer.addEventListener('input', function(e) {
+                if (e.target.classList.contains('option-input') && questionType.value === 'multiple_choice') {
+                    updateCorrectOptionRadios();
+                }
+            });
+
+            function updateOptionsPlaceholders() {
+                const optionInputs = optionsContainer.querySelectorAll('.option-input');
+                optionInputs.forEach((input, index) => {
+                    input.placeholder = `Option ${index + 1}`;
                 });
-                
-                // Add option button
-                questionItem.querySelector('.add-option-btn').addEventListener('click', function() {
-                    const optionsContainer = document.getElementById(`options_container_${this.dataset.index}`);
-                    addOption(optionsContainer);
-                });
-                
-                // Question type change handler
-                questionItem.querySelector('.question-type').addEventListener('change', function() {
-                    updateQuestionFields(questionItem, this.value);
-                });
-                
-                // Image upload button
-                questionItem.querySelector('.image-upload-btn').addEventListener('click', function() {
-                    const index = this.dataset.index;
-                    document.getElementById(`image_upload_${index}`).click();
-                });
-                
-                // File input change handler
-                questionItem.querySelector('.image-input').addEventListener('change', function() {
-                    const file = this.files[0];
-                    if (!file) return;
-                    
-                    const index = this.id.split('_').pop();
-                    const previewContainer = document.getElementById(`image_preview_${index}`);
-                    
-                    // Show preview
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewContainer.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Uploaded Image">`;
-                    };
-                    reader.readAsDataURL(file);
-                });
-                
-                // Append the new question to the container
-                questionsContainer.appendChild(questionItem);
-                
-                // Initialize with default type (multiple choice)
-                updateQuestionFields(questionItem, 'multiple_choice');
             }
-            
-            // Function to add a new option to a multiple choice question
-            function addOption(optionsContainer) {
-                const newOption = document.importNode(optionTemplate, true);
-                
-                // Add event listener to remove button
-                newOption.querySelector('.remove-option').addEventListener('click', function() {
-                    this.closest('.option-row').remove();
-                });
-                
-                optionsContainer.appendChild(newOption);
+
+            // Image upload handling
+            imageUploadBtn.addEventListener('click', function() {
+                imageUpload.click();
+            });
+
+            imageUpload.addEventListener('change', function() {
+                const file = this.files[0];
+                if (!file) return;
+                imageFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Uploaded Image">`;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Question type handling
+            questionType.addEventListener('change', updateQuestionType);
+
+            function updateQuestionType() {
+                const type = questionType.value;
+                optionsSection.classList.add('hidden');
+                visualSection.classList.add('hidden');
+
+                if (type === 'multiple_choice') {
+                    optionsSection.classList.remove('hidden');
+                } else if (type === 'visual') {
+                    visualSection.classList.remove('hidden');
+                }
+
+                updateCorrectAnswerSection(type);
             }
-            
-            // Function to update visible fields based on question type
-            function updateQuestionFields(questionItem, type) {
-                const multipleChoiceFields = questionItem.querySelector('.multiple-choice-fields');
-                const shortAnswerFields = questionItem.querySelector('.short-answer-fields');
-                const explanationFields = questionItem.querySelector('.explanation-fields');
-                const visualFields = questionItem.querySelector('.visual-question-fields');
-                
-                // Hide all fields first
-                multipleChoiceFields.classList.add('hidden');
-                shortAnswerFields.classList.add('hidden');
-                explanationFields.classList.add('hidden');
-                visualFields.classList.add('hidden');
-                
-                // Show relevant fields based on type
-                switch (type) {
+
+            function updateCorrectAnswerSection(type) {
+                switch(type) {
                     case 'multiple_choice':
-                        multipleChoiceFields.classList.remove('hidden');
+                        correctAnswerContainer.innerHTML = `
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-check"></i> Correct Option
+                                </label>
+                                <div id="correct-option-container">
+                                    <!-- Populated with radio buttons -->
+                                </div>
+                                <div class="help-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p>Select the correct answer from the options.</p>
+                                </div>
+                            </div>
+                        `;
+                        updateCorrectOptionRadios();
                         break;
                     case 'short_answer':
-                        shortAnswerFields.classList.remove('hidden');
+                        correctAnswerContainer.innerHTML = `
+                            <div class="form-group">
+                                <label for="correct-answer-short">
+                                    <i class="fas fa-check"></i> Correct Answer(s)
+                                </label>
+                                <input type="text" id="correct-answer-short" class="form-control" placeholder="Enter correct answer(s), separate multiple with commas">
+                                <div class="help-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p>For multiple possible answers, separate with commas.</p>
+                                </div>
+                            </div>
+                        `;
                         break;
                     case 'explanation':
-                        explanationFields.classList.remove('hidden');
+                        correctAnswerContainer.innerHTML = `
+                            <div class="form-group">
+                                <label for="correct-answer-explanation">
+                                    <i class="fas fa-check"></i> Model Answer
+                                </label>
+                                <textarea id="correct-answer-explanation" class="form-control" rows="3" placeholder="Enter a model/example answer"></textarea>
+                                <div class="help-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    <p>This will be used to evaluate student responses.</p>
+                                </div>
+                            </div>
+                        `;
                         break;
                     case 'visual':
-                        visualFields.classList.remove('hidden');
+                        correctAnswerContainer.innerHTML = `
+                            <div class="form-group">
+                                <label>
+                                    <i class="fas fa-check"></i> Answer Information
+                                </label>
+                                <p class="help-text">
+                                    <i class="fas fa-info-circle"></i>
+                                    Visual questions are evaluated through AI conversation. No specific correct answer is required.
+                                </p>
+                            </div>
+                        `;
                         break;
                 }
             }
-            
-            // Function to generate preview
+
+            function updateCorrectOptionRadios() {
+                const correctOptionContainer = document.getElementById('correct-option-container');
+                if (!correctOptionContainer) return;
+                correctOptionContainer.innerHTML = '';
+                const optionInputs = optionsContainer.querySelectorAll('.option-input');
+                const radioGroup = document.createElement('div');
+                radioGroup.className = 'radio-group';
+                optionInputs.forEach((input, index) => {
+                    const option = input.value.trim() || `Option ${index + 1}`;
+                    const radioOption = document.createElement('label');
+                    radioOption.className = 'radio-option';
+                    radioOption.innerHTML = `
+                        <input type="radio" name="correct-option" value="${option}" ${index === 0 ? 'checked' : ''}>
+                        <span>${option}</span>
+                    `;
+                    radioGroup.appendChild(radioOption);
+                });
+                correctOptionContainer.appendChild(radioGroup);
+            }
+
+            // Save question
+            saveQuestionBtn.addEventListener('click', function() {
+                if (!questionText.value.trim()) {
+                    alert('Please enter a question text.');
+                    return;
+                }
+
+                const type = questionType.value;
+                const points = parseInt(pointsInput.value) || 1;
+                const question = { text: questionText.value.trim(), type };
+
+                let correctAnswer;
+
+                if (type === 'multiple_choice') {
+                    const options = [];
+                    const optionInputs = optionsContainer.querySelectorAll('.option-input');
+                    let hasEmptyOption = false;
+                    optionInputs.forEach(input => {
+                        if (!input.value.trim()) hasEmptyOption = true;
+                       єї: true
+                        options.push(input.value.trim() || `Option ${options.length + 1}`);
+                    });
+                    if (hasEmptyOption) {
+                        alert('Please fill in all options or remove empty ones.');
+                        return;
+                    }
+                    question.options = options;
+                    const selectedRadio = document.querySelector('input[name="correct-option"]:checked');
+                    correctAnswer = selectedRadio ? selectedRadio.value : '';
+                } else if (type === 'short_answer') {
+                    const shortAnswer = document.getElementById('correct-answer-short').value.trim();
+                    if (!shortAnswer) {
+                        alert('Please enter at least one correct answer.');
+                        return;
+                    }
+                    correctAnswer = shortAnswer.split(',').map(ans => ans.trim());
+                } else if (type === 'explanation') {
+                    const explanation = document.getElementById('correct-answer-explanation').value.trim();
+                    if (!explanation) {
+                        alert('Please provide a model answer for evaluation.');
+                        return;
+                    }
+                    correctAnswer = explanation;
+                } else if (type === 'visual') {
+                    question.visual = true;
+                    question.instructions = visualInstructions.value.trim();
+                    correctAnswer = 'This is a visual question evaluated through conversation';
+                }
+
+                if (editingIndex >= 0) {
+                    questions[editingIndex] = question;
+                    answers[editingIndex] = { correct_answer: correctAnswer, points };
+                    if (type === 'visual' && imageFile) {
+                        answers[editingIndex].image = imageFile;
+                    }
+                } else {
+                    questions.push(question);
+                    const newIndex = questions.length - 1;
+                    answers[newIndex] = { correct_answer: correctAnswer, points };
+                    if (type === 'visual' && imageFile) {
+                        answers[newIndex].image = imageFile;
+                    }
+                }
+
+                updateJsonInputs();
+                renderQuestions();
+                hideModal();
+            });
+
+            // Edit question
+            function editQuestion(index) {
+                const question = questions[index];
+                const answer = answers[index];
+
+                questionText.value = question.text;
+                questionType.value = question.type;
+                pointsInput.value = answer.points;
+
+                if (question.type === 'multiple_choice' && question.options) {
+                    optionsContainer.innerHTML = '';
+                    question.options.forEach((option, i) => {
+                        const optionRow = document.createElement('div');
+                        optionRow.className = 'option-row';
+                        optionRow.innerHTML = `
+                            wymaga: true
+                            <input type="text" class="form-control option-input" placeholder="Option ${i + 1}" value="${option}">
+                            <button type="button" class="btn-remove-option">
+                                <i class="fas fa-minus-circle"></i>
+                            </button>
+                        `;
+                        optionsContainer.appendChild(optionRow);
+                    });
+                } else if (question.type === 'visual') {
+                    visualInstructions.value = question.instructions || '';
+                    imagePreview.innerHTML = answer.image ? `<img src="${URL.createObjectURL(answer.image)}" class="preview-image" alt="Uploaded Image">` : '';
+                    imageFile = answer.image || null;
+                }
+
+                updateQuestionType();
+
+                setTimeout(() => {
+                    if (question.type === 'multiple_choice') {
+                        const radios = document.querySelectorAll('input[name="correct-option"]');
+                        radios.forEach(radio => {
+                            if (radio.value === answer.correct_answer) {
+                                radio.checked = true;
+                            }
+                        });
+                    } else if (question.type === 'short_answer') {
+                        const correctAnswerInput = document.getElementById('correct-answer-short');
+                        if (correctAnswerInput) {
+                            correctAnswerInput.value = Array.isArray(answer.correct_answer) 
+                                ? answer.correct_answer.join(', ') 
+                                : answer.correct_answer;
+                        }
+                    } else if (question.type === 'explanation') {
+                        const correctAnswerTextarea = document.getElementById('correct-answer-explanation');
+                        if (correctAnswerTextarea) {
+                            correctAnswerTextarea.value = answer.correct_answer;
+                        }
+                    }
+                }, 100);
+
+                answerDetails.classList.remove('hidden');
+                toggleAnswerSection.querySelector('i').classList.remove('fa-chevron-down');
+                toggleAnswerSection.querySelector('i').classList.add('fa-chevron-up');
+                editingIndex = index;
+                modalTitle.textContent = 'Edit Question';
+                showModal();
+            }
+
+            // Delete question
+            function deleteQuestion(index) {
+                if (confirm('Are you sure you want to delete this question?')) {
+                    questions.splice(index, 1);
+                    const newAnswers = {};
+                    Object.keys(answers).forEach(key => {
+                        const keyNum = parseInt(key);
+                        if (keyNum < index) {
+                            newAnswers[keyNum] = answers[keyNum];
+                        } else if (keyNum > index) {
+                            newAnswers[keyNum - 1] = answers[keyNum];
+                        }
+                    });
+                    answers = newAnswers;
+                    updateJsonInputs();
+                    renderQuestions();
+                }
+            }
+
+            // Render questions
+            function renderQuestions() {
+                if (questions.length === 0) {
+                    emptyState.style.display = 'block';
+                    questionList.innerHTML = '';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                let html = '';
+                questions.forEach((question, index) => {
+                    let questionPreview = '';
+                    if (question.type === 'multiple_choice' && question.options) {
+                        let optionsPreview = question.options.map((opt, i) => 
+                            `<span style="color: ${answers[index].correct_answer === opt ? 'var(--success-color)' : 'inherit'}">${String.fromCharCode(65 + i)}. ${opt}</span>`
+                        ).join(' | ');
+                        questionPreview = `<div class="question-preview">
+                            <strong>Type:</strong> Multiple Choice | <strong>Points:</strong> ${answers[index].points}<br>
+                            <strong>Options:</strong> ${optionsPreview}
+                        </div>`;
+                    } else if (question.type === 'visual') {
+                        questionPreview = `<div class="question-preview">
+                            <strong _
+
+                            Type:</strong> Visual | <strong>Points:</strong> ${answers[index].points}<br>
+                            <strong>Instructions:</strong> ${question.instructions || 'No instructions provided'}<br>
+                            ${answers[index].image ? '<i class="fas fa-image"></i> Image uploaded' : 'No image uploaded'}
+                        </div>`;
+                    } else {
+                        const answerPreview = Array.isArray(answers[index].correct_answer) 
+                            ? answers[index].correct_answer.join(', ')
+                            : answers[index].correct_answer;
+                        questionPreview = `<div class="question-preview">
+                            <strong>Type:</strong> ${question.type === 'short_answer' ? 'Short Answer' : 'Explanation'} | 
+                            <strong>Points:</strong> ${answers[index].points}<br>
+                            <strong>Answer:</strong> ${answerPreview.length > 100 ? answerPreview.substring(0, 100) + '...' : answerPreview}
+                        </div>`;
+                    }
+
+                    html += `
+                        <div class="question-item" data-index="${index}">
+                            <div class="question-item-header">
+                                <span class="question-number">Question ${index + 1}</span>
+                                <div class="question-actions">
+                                    <button type="button" class="btn-action edit" data-index="${index}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn-action delete" data-index="${index}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p>${question.text}</p>
+                            ${questionPreview}
+                        </div>
+                    `;
+                });
+
+                questionList.innerHTML = html;
+
+                const editButtons = questionList.querySelectorAll('.btn-action.edit');
+                const deleteButtons = questionList.querySelectorAll('.btn-action.delete');
+
+                editButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        editQuestion(parseInt(this.getAttribute('data-index')));
+                    });
+                });
+
+                deleteButtons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        deleteQuestion(parseInt(this.getAttribute('data-index')));
+                    });
+                });
+            }
+
+            // Update JSON inputs
+            function updateJsonInputs() {
+                questionsJsonInput.value = JSON.stringify(questions);
+                answersJsonInput.value = JSON.stringify(answers);
+            }
+
+            // Generate preview
             function generatePreview() {
                 const previewContainer = document.getElementById('previewContainer');
                 previewContainer.innerHTML = '';
-                
-                if (questionsContainer.children.length === 0) {
+
+                if (questions.length === 0) {
                     previewContainer.innerHTML = '<p>No questions added yet. Add questions to see a preview.</p>';
                     return;
                 }
-                
-                // Generate preview for each question
-                Array.from(questionsContainer.children).forEach((questionItem, index) => {
-                    const questionType = questionItem.querySelector('.question-type').value;
-                    const questionText = questionItem.querySelector('.question-text').value;
-                    const points = questionItem.querySelector('.question-points').value;
-                    
+
+                questions.forEach((question, index) => {
+                    const points = answers[index].points;
                     const previewCard = document.createElement('div');
                     previewCard.className = 'question-card';
-                    
                     let questionContent = `
                         <div class="question-number">Question ${index + 1} - ${points} point${points > 1 ? 's' : ''}</div>
                         <div class="question-content">
-                            <div class="question-text">${questionText}</div>
+                            <div class="question-text">${question.text}</div>
                         </div>
                     `;
-                    
-                    if (questionType === 'multiple_choice') {
-                        const options = Array.from(questionItem.querySelectorAll('.option-text')).map(opt => opt.value);
+
+                    if (question.type === 'multiple_choice') {
                         let optionsHTML = `<div class="option-grid">`;
-                        
-                        options.forEach((option, i) => {
+                        question.options.forEach((option) => {
                             optionsHTML += `
                                 <div class="option-box">
                                     <div class="option-content">${option}</div>
                                 </div>
                             `;
                         });
-                        
                         optionsHTML += `</div>`;
                         questionContent += optionsHTML;
-                    } 
-                    else if (questionType === 'short_answer' || questionType === 'explanation') {
+                    } else if (question.type === 'short_answer' || question.type === 'explanation') {
                         questionContent += `
                             <div class="text-answer-container">
                                 <textarea placeholder="Enter your answer here..."></textarea>
@@ -726,14 +1095,13 @@
                                 </button>
                             </div>
                         `;
-                    }
-                    else if (questionType === 'visual') {
-                        const instructions = questionItem.querySelector('.visual-instructions').value || 'Examine the image and answer questions about it.';
-                        const imagePreview = questionItem.querySelector('.image-preview').innerHTML;
-                        
+                    } else if (question.type === 'visual') {
+                        const instructions = question.instructions || 'Examine the image and answer questions about it.';
+                        const imagePreview = answers[index].image ? `<img src="${URL.createObjectURL(answers[index].image)}" class="preview-image" alt="Uploaded Image">` : '<div class="placeholder-image" style="background-color:#e9ecef;height:200px;display:flex;align-items:center;justify-content:center;border-radius:8px;"><i class="fas fa-image" style="font-size:2rem;color:#adb5bd;"></i></div>';
+
                         questionContent += `
                             <div class="visual-content">
-                                ${imagePreview || '<div class="placeholder-image" style="background-color:#e9ecef;height:200px;display:flex;align-items:center;justify-content:center;border-radius:8px;"><i class="fas fa-image" style="font-size:2rem;color:#adb5bd;"></i></div>'}
+                                ${imagePreview}
                                 <div class="visual-instructions" style="margin-top:15px;padding:15px;background-color:#f8f9fa;border-radius:8px;">
                                     <i class="fas fa-info-circle"></i> ${instructions}
                                 </div>
@@ -743,11 +1111,49 @@
                             </div>
                         `;
                     }
-                    
+
                     previewCard.innerHTML = questionContent;
                     previewContainer.appendChild(previewCard);
                 });
             }
+
+            // Form submission
+            assessmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (questions.length === 0) {
+                    alert('Please add at least one question to create an assessment.');
+                    return;
+                }
+
+                const formData = new FormData();
+                questions.forEach((question, index) => {
+                    if (question.type === 'visual' && answers[index].image) {
+                        formData.append(`image_${index}`, answers[index].image);
+                    }
+                });
+
+                formData.append('questions_json', JSON.stringify(questions));
+                formData.append('answers_json', JSON.stringify(answers));
+
+                fetch('/', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        response.text().then(text => {
+                            alert('Error creating assessment: ' + text);
+                        });
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to create assessment. Please try again.');
+                });
+            });
+
+            // Initialize
+            renderQuestions();
         });
     </script>
 </body>

@@ -474,3 +474,21 @@ textarea:focus {
         justify-content: center;
     }
 }
+
+
+.preview-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.visual-instructions {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.visual-content {
+    margin-bottom: 20px;
+}
