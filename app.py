@@ -20,8 +20,16 @@ def index():
     if request.method == 'POST':
         # Get questions and answers from form
         try:
-            questions_data = json.loads(request.form.get('questions_json', '{}'))
+            questions_data = json.loads(request.form.get('questions_json', '[]'))
             answers_data = json.loads(request.form.get('answers_json', '{}'))
+
+            # Validate data
+            if not questions_data:
+                return render_template('index.html', error="Please add at least one question to your assessment.")
+
+            if len(questions_data) != len(answers_data):
+                return render_template('index.html',
+                                       error="Question and answer data is mismatched. Please refresh and try again.")
 
             # Store in session
             session['questions'] = questions_data
@@ -30,7 +38,7 @@ def index():
 
             return redirect(url_for('assessment'))
         except json.JSONDecodeError:
-            error = "Invalid JSON format. Please check your input."
+            error = "Invalid JSON format. Please try again or refresh the page."
             return render_template('index.html', error=error)
 
     return render_template('index.html')
