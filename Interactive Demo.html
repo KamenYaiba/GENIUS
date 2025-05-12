@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartAssessment Prototype</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e54c8;
+            --primary-light: #8f94fb;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --white-color: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            margin: 20px;
+        }
+
+        .backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, var(--primary-light), transparent 70%),
+                         radial-gradient(circle at bottom right, rgba(142, 197, 252, 0.5), transparent 70%);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--white-color);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+            background-color: rgba(78, 84, 200, 0.1);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        h1 span {
+            color: var(--primary-color);
+        }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .progress-bar {
+            width: 200px;
+            height: 8px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-light), var(--primary-color));
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        main {
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .question-card {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-number {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .question-content {
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            line-height: 1.5;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
+        .original-question {
+            font-size: 14px;
+            color: var(--secondary-color);
+            font-style: italic;
+            margin-top: 5px;
+            padding-left: 10px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .accessibility-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .accessibility-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--light-color);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: var(--dark-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .accessibility-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        .read-aloud-btn {
+            color: var(--info-color);
+        }
+
+        .simplify-btn {
+            color: var(--warning-color);
+        }
+
+        .answer-section {
+            margin-bottom: 20px;
+        }
+
+        .visual-content {
+            margin-bottom: 20px;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .visual-instructions {
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+            font-size: 15px;
+            color: var(--dark-color);
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .option-box {
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .option-box:hover {
+            border-color: var(--primary-light);
+            background-color: rgba(78, 84, 200, 0.05);
+        }
+
+        .option-box.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(78, 84, 200, 0.1);
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .text-answer-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 16px;
+            min-height: 120px;
+            transition: var(--transition);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .voice-input-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .voice-input-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .nav-btn, .submit-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .prev-btn {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .next-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .submit-btn {
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px 25px;
+        }
+
+        .nav-btn:hover, .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .speech-status {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+
+        .pulse-animation {
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+        }
+
+        #stop-listening {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        #stop-listening:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .chat-container {
+            margin-top: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-messages {
+            height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .ai-message {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+            border-top-left-radius: 5px;
+            margin-right: auto;
+        }
+
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            border-top-right-radius: 5px;
+            margin-left: auto;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            bottom: -20px;
+            right: 10px;
+        }
+
+        .speaking-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #28a745;
+            font-style: italic;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px 15px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            width: fit-content;
+            margin-bottom: 15px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #6c757d;
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .visual-highlight {
+            border: 3px solid #ffc107;
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* Audio player styling */
+        .audio-player {
+            margin-top: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .audio-player audio {
+            width: 100%;
+        }
+
+        .speaking-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #28a745;
+            font-style: italic;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px 15px;
+            background-color: #e9ecef;
+            border-radius: 15px;
+            width: fit-content;
+            margin-bottom: 15px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #6c757d;
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .voice-input-btn:disabled {
+        background-color: #a0a0a0;
+        cursor: not-allowed;
+    }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="backdrop"></div>
+        
+        <header>
+            <div class="logo-container">
+                <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                <h1>GENIUS</span></h1>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress-indicator" style="width: 0%"></div>
+                </div>
+                <span class="progress-text" id="progress-text">0/5 answered</span>
+            </div>
+        </header>
+
+        <main class="questions-container">
+            <form id="assessment-form">
+                <!-- Question 1: Multiple Choice Math -->
+                <div class="question-card" id="question-card-0">
+                    <div class="question-number">Question 1 of 5</div>
+                    
+                    <div class="question-content">
+                        <h2 class="question-text" id="question-text-0">
+                            If you have 3 groups with 4 apples in each group, how many apples do you have in total?
+                        </h2>
+                        
+                        <div class="accessibility-tools">
+                            <button type="button" class="accessibility-btn read-aloud-btn" data-question-id="0">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Read Aloud</span>
+                            </button>
+                            
+                            <button type="button" class="accessibility-btn simplify-btn">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>Simplify Question</span>
+                            </button>
+                        </div>
+                        
+                        <div class="answer-section">
+                            <div class="option-grid">
+                                <input type="hidden" id="answer_0" name="answer_0" value="">
+                                <div class="option-box" data-value="7" data-question="0">
+                                    <div class="option-content">7</div>
+                                </div>
+                                <div class="option-box" data-value="12" data-question="0">
+                                    <div class="option-content">12</div>
+                                </div>
+                                <div class="option-box" data-value="9" data-question="0">
+                                    <div class="option-content">9</div>
+                                </div>
+                                <div class="option-box" data-value="8" data-question="0">
+                                    <div class="option-content">8</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <div></div> <!-- Empty div for spacing -->
+                        <button type="button" class="nav-btn next-btn" data-target="1">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question 2: Reading Comprehension -->
+                <div class="question-card" id="question-card-1" style="display:none">
+                    <div class="question-number">Question 2 of 5</div>
+                    
+                    <div class="question-content">
+                        <h2 class="question-text" id="question-text-1">
+                            Read the short paragraph:<br><br>
+                            Maya has a garden with red roses and yellow sunflowers. Every Monday, she waters the garden for 10 minutes. On Fridays, she adds new soil to help the plants grow taller. The sunflowers are now taller than Maya!<br><br>
+                            What day does Maya water her garden?
+                        </h2>
+                        
+                        <div class="accessibility-tools">
+                            <button type="button" class="accessibility-btn read-aloud-btn" data-question-id="1">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Read Aloud</span>
+                            </button>
+                            
+                            <button type="button" class="accessibility-btn simplify-btn">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>Simplify Question</span>
+                            </button>
+                        </div>
+                        
+                        <div class="answer-section">
+                            <div class="option-grid">
+                                <input type="hidden" id="answer_1" name="answer_1" value="">
+                                <div class="option-box" data-value="Sunday" data-question="1">
+                                    <div class="option-content">Sunday</div>
+                                </div>
+                                <div class="option-box" data-value="Monday" data-question="1">
+                                    <div class="option-content">Monday</div>
+                                </div>
+                                <div class="option-box" data-value="Friday" data-question="1">
+                                    <div class="option-content">Friday</div>
+                                </div>
+                                <div class="option-box" data-value="Wednesday" data-question="1">
+                                    <div class="option-content">Wednesday</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <button type="button" class="nav-btn prev-btn" data-target="0">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="nav-btn next-btn" data-target="2">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question 3: Science - Open Ended -->
+                <div class="question-card" id="question-card-2" style="display:none">
+                    <div class="question-number">Question 3 of 5</div>
+                    
+                    <div class="question-content">
+                        <h2 class="question-text" id="question-text-2">
+                            Explain why plants need sunlight to grow. What do you think would happen to a plant placed in a dark closet?
+                        </h2>
+                        
+                        <div class="accessibility-tools">
+                            <button type="button" class="accessibility-btn read-aloud-btn" data-question-id="2">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Read Aloud</span>
+                            </button>
+                            
+                            <button type="button" class="accessibility-btn simplify-btn">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>Simplify Question</span>
+                            </button>
+                        </div>
+                        
+                        <div class="answer-section">
+                            <div class="text-answer-container">
+                                <textarea 
+                                    id="answer_2"
+                                    name="answer_2" 
+                                    rows="4" 
+                                    placeholder="Type your answer here..."></textarea>
+                                
+                                <button type="button" class="voice-input-btn" data-question-id="2">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Use Voice</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <button type="button" class="nav-btn prev-btn" data-target="1">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="nav-btn next-btn" data-target="3">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question 4: Visual Question - Pattern Recognition -->
+                <div class="question-card" id="question-card-3" style="display:none">
+                    <div class="question-number">Question 4 of 5</div>
+                    
+                    <div class="question-content">
+                        <h2 class="question-text" id="question-text-3">
+                            Look at the pattern below. What comes next in the sequence?
+                        </h2>
+                        
+                        <div class="accessibility-tools">
+                            <button type="button" class="accessibility-btn read-aloud-btn" data-question-id="3">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Read Aloud</span>
+                            </button>
+                            
+                            <button type="button" class="accessibility-btn simplify-btn">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>Simplify Question</span>
+                            </button>
+                        </div>
+                        
+                        <div class="answer-section">
+                            <div class="visual-content">
+                                <img src="media/patterns.png" class="preview-image" alt="Pattern sequence showing: Circle, Square, Triangle, Circle, Square, [?]" id="pattern-image">
+                                <div class="visual-instructions">
+                                    <i class="fas fa-info-circle"></i> Look at the shapes in order and decide what shape should come next in the pattern.
+                                </div>
+                            </div>
+
+                            <div class="chat-container" id="chat-container-3">
+                                <div class="chat-header">
+                                    <i class="fas fa-robot"></i> AI Discussion Assistant
+                                </div>
+                                <div class="chat-messages" id="chat-messages-3">
+                                    <!-- Chat messages will be inserted here dynamically -->
+                                </div>
+                            </div>
+
+                            <div class="text-answer-container">
+                                <textarea 
+                                    id="answer_3"
+                                    name="answer_3" 
+                                    rows="4" 
+                                    placeholder="Discuss the pattern here..."></textarea>
+                                
+                                <button type="button" class="voice-input-btn" data-question-id="3" id="voice-btn-3">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Use Voice</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <button type="button" class="nav-btn prev-btn" data-target="2">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="nav-btn next-btn" data-target="4">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question 5: Visual Question - Map Interpretation -->
+                <div class="question-card" id="question-card-4" style="display:none">
+                    <div class="question-number">Question 5 of 5</div>
+                    
+                    <div class="question-content">
+                        <h2 class="question-text" id="question-text-4">
+                            Look at this simple map of a neighborhood. You will be asked questions about it.
+                        </h2>
+                        
+                        <div class="accessibility-tools">
+                            <button type="button" class="accessibility-btn read-aloud-btn" data-question-id="4">
+                                <i class="fas fa-volume-up"></i>
+                                <span>Read Aloud</span>
+                            </button>
+                            
+                            <button type="button" class="accessibility-btn simplify-btn">
+                                <i class="fas fa-comment-dots"></i>
+                                <span>Simplify Question</span>
+                            </button>
+                        </div>
+                        
+                        <div class="answer-section">
+                            <div class="visual-content">
+                                <img src="media/map.png" class="preview-image" alt="Simple neighborhood map showing a school, park, library, and houses with streets connecting them" id="map-image">
+                                <div class="visual-instructions">
+                                    <i class="fas fa-info-circle"></i> Study the map carefully. You will be asked questions about locations and directions.
+                                </div>
+                            </div>
+
+                            <div class="chat-container" id="chat-container-4">
+                                <div class="chat-header">
+                                    <i class="fas fa-robot"></i> AI Discussion Assistant
+                                </div>
+                                <div class="chat-messages" id="chat-messages-4">
+                                    <!-- Chat messages will be inserted here dynamically -->
+                                </div>
+                            </div>
+
+                            <div class="text-answer-container">
+                                <textarea 
+                                    id="answer_4"
+                                    name="answer_4" 
+                                    rows="4" 
+                                    placeholder="Discuss the map here..."></textarea>
+                                
+                                <button type="button" class="voice-input-btn" data-question-id="4" id="voice-btn-4">
+                                    <i class="fas fa-microphone"></i>
+                                    <span>Use Voice</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <button type="button" class="nav-btn prev-btn" data-target="3">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="submit" class="submit-btn">
+                            Submit Assessment <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </main>
+
+        <!-- Audio element for text-to-speech playback -->
+        <audio id="tts-audio" style="display:none;"></audio>
+        
+        <!-- Speech recognition status -->
+        <div id="speech-status" class="speech-status">
+            <div class="pulse-animation"></div>
+            <p>Listening to your answer...</p>
+            <button id="stop-listening" type="button">Stop Recording</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables for the scripted demo
+        const scriptedDemo = {
+            currentQuestion: 0,
+            progressPercentage: 0,
+            inVisualDiscussion: false,
+            visualDiscussionStep: 0,
+            audioPlaying: false,
+
+            // New: Predefined response for Question 3
+            question3Response: {
+                text: "Plants need sunlight to make their food through photosynthesis. The sunlight helps them change water and carbon dioxide into sugar and oxygen. If a plant is put in a dark closet, it would turn yellow and eventually die because it can't make food without light.",
+                audioFile: "media/q3_res.m4a"
+            },
+
+            // Pattern question script
+            patternScript: [
+                { 
+                    speaker: "ai", 
+                    text: "I notice there's a pattern of shapes in the image. Can you tell me what shapes you see in order?", 
+                    audioFile: "media/ai_pattern_1.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "I see a circle, then a square, then a triangle, then it repeats with a circle and square.", 
+                    audioFile: "media/user_pattern_1.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "Good observation! So we have circle, square, triangle, circle, square... what do you think comes next in this pattern?", 
+                    audioFile: "media/ai_pattern_2.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "I think a triangle comes next because the pattern is repeating.", 
+                    audioFile: "media/user_pattern_2.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "That's great thinking! Can you explain why you think the pattern repeats? How did you figure that out?", 
+                    audioFile: "media/ai_pattern_3.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "I noticed that after the triangle, it started over with the circle. So it's circle, square, triangle, and then it repeats. So after the square would be triangle again.", 
+                    audioFile: "media/user_pattern_3.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "Excellent reasoning! You identified the pattern correctly. Patterns like this are used a lot in math and in everyday life. Can you think of any other patterns you see in your school or home?", 
+                    audioFile: "media/ai_pattern_4.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "Well, I see patterns in the calendar with days of the week repeating. And also in music when the chorus repeats!", 
+                    audioFile: "media/user_pattern_4.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "Those are wonderful examples! You're showing really good pattern recognition skills.", 
+                    audioFile: "media/ai_pattern_5.mp3" 
+                }
+            ],
+
+            // Map question script
+            mapScript: [
+                { 
+                    speaker: "ai", 
+                    text: "Let's look at this neighborhood map together. I can see different buildings and streets. Can you tell me what places you can identify on this map?", 
+                    audioFile: "media/ai_map_1.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "I can see a school, a park, a library, and some houses. There are roads connecting everything.", 
+                    audioFile: "media/user_map_1.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "Great job identifying those places! Now, if you wanted to go from the school to the library, which direction would you need to walk?", 
+                    audioFile: "media/ai_map_2.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "I think you would go east from the school, then north at the intersection.", 
+                    audioFile: "media/user_map_2.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "That's good directional thinking! Now a harder question: what's the shortest route from the park to the school? Can you describe the path?", 
+                    audioFile: "media/ai_map_3.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "The shortest way would be to go west from the park to the main road, then south to the school.", 
+                    audioFile: "media/user_map_3.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "Excellent! You're showing very good map-reading skills. One last question: if you were at the library and needed to meet a friend at the park, would you pass by the school on your way?", 
+                    audioFile: "media/ai_map_4.mp3" 
+                },
+                { 
+                    speaker: "user", 
+                    text: "No, you wouldn't pass the school. You would go west from the library and then north to the park.", 
+                    audioFile: "media/user_map_4.m4a" 
+                },
+                { 
+                    speaker: "ai", 
+                    text: "Perfect analysis! You've demonstrated excellent spatial reasoning and map-reading abilities.", 
+                    audioFile: "media/ai_map_5.mp3" 
+                }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupScriptedDemo();
+            setupNavigationButtons();
+            setupOptionBoxes();
+            setupReadAloudButtons();
+            setupSimplifyButtons();
+            setupVoiceButtons();
+            setupFormSubmission();
+        });
+
+        // Main setup for the scripted demo
+        function setupScriptedDemo() {
+            document.addEventListener('keydown', function(event) {
+                // Advance script on Enter key press
+                if (event.key === 'Enter' && !scriptedDemo.audioPlaying) {
+                    advanceScript();
+                }
+            });
+        }
+
+        // Advance the script based on current state
+        function advanceScript() {
+            if (scriptedDemo.inVisualDiscussion) {
+                const currentQuestion = scriptedDemo.currentQuestion;
+                const scriptArray = currentQuestion === 3 ? scriptedDemo.patternScript : scriptedDemo.mapScript;
+                
+                if (scriptedDemo.visualDiscussionStep < scriptArray.length) {
+                    const step = scriptArray[scriptedDemo.visualDiscussionStep];
+                    
+                    // Add message to chat
+                    const chatMessages = document.getElementById(`chat-messages-${currentQuestion}`);
+                    const message = document.createElement('div');
+                    message.className = `message ${step.speaker}-message`;
+                    
+                    // For user messages, initially show only the loading animation
+                    if (step.speaker === 'user') {
+                        const loadingIndicator = document.createElement('div');
+                        loadingIndicator.className = 'typing-indicator';
+                        for (let i = 0; i < 3; i++) {
+                            const dot = document.createElement('div');
+                            dot.className = 'typing-dot';
+                            loadingIndicator.appendChild(dot);
+                        }
+                        message.appendChild(loadingIndicator);
+                        chatMessages.appendChild(message);
+                    } else {
+                        // For AI messages, show text immediately
+                        message.textContent = step.text;
+                        chatMessages.appendChild(message);
+                    }
+                    
+                    // Scroll to bottom of chat
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Handle audio playback
+                    if (step.audioFile) {
+                        const audio = document.getElementById('tts-audio');
+                        audio.src = step.audioFile;
+                        scriptedDemo.audioPlaying = true;
+                        
+                        // Add speaking indicator
+                        const indicator = document.createElement('span');
+                        indicator.className = 'speaking-indicator';
+                        indicator.textContent = '(Speaking...)';
+                        message.appendChild(indicator);
+                        
+                        // Handle audio end
+                        audio.onended = function() {
+                            scriptedDemo.audioPlaying = false;
+                            if (indicator && indicator.parentNode) {
+                                indicator.parentNode.removeChild(indicator);
+                            }
+                            
+                            // For user messages, add text and update textarea after audio ends
+                            if (step.speaker === 'user') {
+                                // Remove loading indicator
+                                const loadingIndicator = message.querySelector('.typing-indicator');
+                                if (loadingIndicator && loadingIndicator.parentNode) {
+                                    loadingIndicator.parentNode.removeChild(loadingIndicator);
+                                }
+                                
+                                // Add transcribed text
+                                message.textContent = step.text;
+                                
+                                // Update textarea
+                                document.getElementById(`answer_${currentQuestion}`).value = step.text;
+                            }
+                        };
+                        
+                        audio.play().catch(e => {
+                            console.log('Audio playback failed:', e);
+                            scriptedDemo.audioPlaying = false;
+                            if (indicator && indicator.parentNode) {
+                                indicator.parentNode.removeChild(indicator);
+                            }
+                            
+                            // Fallback for user messages if audio fails
+                            if (step.speaker === 'user') {
+                                const loadingIndicator = message.querySelector('.typing-indicator');
+                                if (loadingIndicator && loadingIndicator.parentNode) {
+                                    loadingIndicator.parentNode.removeChild(loadingIndicator);
+                                }
+                                message.textContent = step.text;
+                                document.getElementById(`answer_${currentQuestion}`).value = step.text;
+                            }
+                        });
+                    } else {
+                        // For non-audio steps (e.g., AI without audio)
+                        scriptedDemo.audioPlaying = false;
+                        if (step.speaker === 'user') {
+                            // Remove loading indicator
+                            const loadingIndicator = message.querySelector('.typing-indicator');
+                            if (loadingIndicator && loadingIndicator.parentNode) {
+                                loadingIndicator.parentNode.removeChild(loadingIndicator);
+                            }
+                            message.textContent = step.text;
+                            document.getElementById(`answer_${currentQuestion}`).value = step.text;
+                        }
+                    }
+                    
+                    // Advance to next step
+                    scriptedDemo.visualDiscussionStep++;
+                    
+                    // Update progress when script is complete
+                    if (scriptedDemo.visualDiscussionStep === scriptArray.length) {
+                        updateProgress(currentQuestion);
+                    }
+                }
+            }
+        }
+
+        // Setup navigation buttons
+        function setupNavigationButtons() {
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetIndex = parseInt(this.getAttribute('data-target'));
+                    
+                    // Special handling for visual questions
+                    if ((scriptedDemo.currentQuestion === 3 || scriptedDemo.currentQuestion === 4) && 
+                        !scriptedDemo.inVisualDiscussion && targetIndex !== scriptedDemo.currentQuestion) {
+                        
+                        // Prompt the user to start the visual discussion
+                        if (confirm("You haven't completed discussion for this question. Continue anyway?")) {
+                            navigateToQuestion(targetIndex);
+                        }
+                        return;
+                    }
+                    
+                    navigateToQuestion(targetIndex);
+                });
+            });
+        }
+
+        // Function to navigate between questions
+        function navigateToQuestion(targetIndex) {
+            // Hide all question cards
+            document.querySelectorAll('.question-card').forEach(card => {
+                card.style.display = 'none';
+            });
+            
+            // Show target question card
+            document.getElementById(`question-card-${targetIndex}`).style.display = 'block';
+            
+            // Reset visual discussion if we're moving away from it
+            if ((scriptedDemo.currentQuestion === 3 || scriptedDemo.currentQuestion === 4) && 
+                (targetIndex !== 3 && targetIndex !== 4)) {
+                scriptedDemo.inVisualDiscussion = false;
+            }
+            
+            // If moving to a visual question, prepare for visual discussion
+            if ((targetIndex === 3 || targetIndex === 4) && 
+                !document.getElementById(`chat-container-${targetIndex}`).style.display) {
+                prepareVisualQuestion(targetIndex);
+            }
+            
+            // Update current question
+            scriptedDemo.currentQuestion = targetIndex;
+        }
+
+        // Setup multiple choice option boxes
+        function setupOptionBoxes() {
+            document.querySelectorAll('.option-box').forEach(box => {
+                box.addEventListener('click', function() {
+                    const questionId = this.getAttribute('data-question');
+                    const value = this.getAttribute('data-value');
+                    
+                    // Remove selection from all options in this question
+                    document.querySelectorAll(`.option-box[data-question="${questionId}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Select this option
+                    this.classList.add('selected');
+                    
+                    // Update hidden input value
+                    document.getElementById(`answer_${questionId}`).value = value;
+                    
+                    // Update progress
+                    updateProgress(parseInt(questionId));
+                });
+            });
+        }
+
+        // Setup read aloud buttons
+        function setupReadAloudButtons() {
+            document.querySelectorAll('.read-aloud-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionId = this.getAttribute('data-question-id');
+                    const questionText = document.getElementById(`question-text-${questionId}`).textContent.trim();
+                    
+                    // Simulate audio playback (no actual API call)
+                    simulateTextToSpeech(questionText);
+                });
+            });
+        }
+
+        // Setup simplify buttons
+        function setupSimplifyButtons() {
+            document.querySelectorAll('.simplify-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const parentCard = this.closest('.question-card');
+                    const questionTextElement = parentCard.querySelector('.question-text');
+                    const originalText = questionTextElement.textContent.trim();
+                    
+                    // Only simplify if not already simplified
+                    if (!questionTextElement.querySelector('.original-question')) {
+                        // Store original text and show simplified version
+                        const simplifiedText = getSimplifiedText(originalText);
+                        questionTextElement.innerHTML = simplifiedText + 
+                            `<div class="original-question">Original: ${originalText}</div>`;
+                    }
+                });
+            });
+        }
+
+        // Setup voice input buttons
+        function setupVoiceButtons() {
+            document.querySelectorAll('.voice-input-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const questionId = parseInt(this.getAttribute('data-question-id'));
+
+                    // Update current question
+                    scriptedDemo.currentQuestion = questionId;
+
+                    if (questionId === 3 || questionId === 4) {
+                        // For visual questions (Questions 4 and 5)
+                        if (!scriptedDemo.inVisualDiscussion) {
+                            startVisualDiscussion(questionId);
+                        } else {
+                            simulateVoiceRecording();
+                        }
+                    } else {
+                        // For Question 3 (and potentially others)
+                        simulateVoiceRecording();
+                    }
+                });
+            });
+        }
+
+        // Setup form submission
+        function setupFormSubmission() {
+            document.getElementById('assessment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Assessment submitted successfully! Thank you for completing the assessment.');
+            });
+        }
+
+        // Update progress indicator
+        function updateProgress(completedQuestionIndex) {
+            const totalQuestions = 5;
+            let answeredCount = 0;
+            
+            // Check which questions have been answered
+            for (let i = 0; i < totalQuestions; i++) {
+                const answerInput = document.getElementById(`answer_${i}`);
+                if (answerInput && answerInput.value.trim() !== '') {
+                    answeredCount++;
+                }
+            }
+            
+            // If we're updating for a specific question, ensure it's counted
+            if (completedQuestionIndex !== undefined) {
+                const answerInput = document.getElementById(`answer_${completedQuestionIndex}`);
+                if (answerInput && answerInput.value.trim() === '') {
+                    // If this question's answer is empty but we're marking it complete
+                    answeredCount++;
+                }
+            }
+            
+            // Update progress bar and text
+            const percentage = (answeredCount / totalQuestions) * 100;
+            document.getElementById('progress-indicator').style.width = percentage + '%';
+            document.getElementById('progress-text').textContent = `${answeredCount}/${totalQuestions} answered`;
+        }
+
+        // Prepare visual question for discussion
+        function prepareVisualQuestion(questionIndex) {
+            // Show chat container
+            const chatContainer = document.getElementById(`chat-container-${questionIndex}`);
+            chatContainer.style.display = 'block';
+            
+            // Add click event for the image to start discussion
+            const image = questionIndex === 3 ? 
+                          document.getElementById('pattern-image') : 
+                          document.getElementById('map-image');
+            
+            image.addEventListener('click', function() {
+                if (!scriptedDemo.inVisualDiscussion) {
+                    startVisualDiscussion(questionIndex);
+                }
+            });
+            
+            // Highlight the image to indicate interaction
+            image.classList.add('visual-highlight');
+        }
+
+        // Start visual discussion
+        function startVisualDiscussion(questionIndex) {
+            scriptedDemo.inVisualDiscussion = true;
+            scriptedDemo.visualDiscussionStep = 0;
+            scriptedDemo.currentQuestion = questionIndex;
+            
+            // Clear any existing chat messages
+            const chatMessages = document.getElementById(`chat-messages-${questionIndex}`);
+            chatMessages.innerHTML = '';
+            
+            // Add typing indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.className = 'typing-indicator';
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                typingIndicator.appendChild(dot);
+            }
+            chatMessages.appendChild(typingIndicator);
+            
+            // Remove typing indicator after 1.5 seconds and start the script
+            setTimeout(() => {
+                chatMessages.removeChild(typingIndicator);
+                advanceScript();
+            }, 1500);
+        }
+
+        // Simplified text for each question
+        function getSimplifiedText(originalText) {
+            const simplifiedTexts = {
+                "If you have 3 groups with 4 apples in each group, how many apples do you have in total?": 
+                    "Count how many apples you have altogether if you have 3 groups with 4 apples in each group.",
+                
+                "Read the short paragraph:\n\nMaya has a garden with red roses and yellow sunflowers. Every Monday, she waters the garden for 10 minutes. On Fridays, she adds new soil to help the plants grow taller. The sunflowers are now taller than Maya!\n\nWhat day does Maya water her garden?": 
+                    "On what day of the week does Maya give water to her plants?",
+                
+                "Explain why plants need sunlight to grow. What do you think would happen to a plant placed in a dark closet?": 
+                    "Why do plants need light from the sun? What would happen to a plant kept in a dark place?",
+                
+                "Look at the pattern below. What comes next in the sequence?": 
+                    "Look at these shapes that repeat in a pattern. What shape should come next?",
+                
+                "Look at this simple map of a neighborhood. You will be asked questions about it.": 
+                    "This is a map showing places in a neighborhood. You will be asked where things are and how to get from one place to another."
+            };
+            
+            // Return simplified version or original if no simplification available
+            return simplifiedTexts[originalText] || originalText;
+        }
+
+        // Simulate text-to-speech (no actual API call)
+        function simulateTextToSpeech(text) {
+            scriptedDemo.audioPlaying = true;
+            
+            // Create alert to indicate TTS is playing
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            notification.style.color = 'white';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '5px';
+            notification.style.zIndex = '1000';
+            notification.innerHTML = '<i class="fas fa-volume-up"></i> Reading question aloud...';
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                document.body.removeChild(notification);
+                scriptedDemo.audioPlaying = false;
+            }, 3000);
+        }
+
+        // Simulate voice recording
+        function simulateVoiceRecording() {
+            const currentQuestion = scriptedDemo.currentQuestion;
+            const speechStatus = document.getElementById('speech-status');
+            const textarea = document.getElementById(`answer_${currentQuestion}`);
+
+            // Show speech status
+            speechStatus.style.display = 'flex';
+
+            if (currentQuestion === 2 && scriptedDemo.question3Response.audioFile) {
+                // Handle Question 3 with audio playback
+                const audio = document.getElementById('tts-audio');
+                audio.src = scriptedDemo.question3Response.audioFile;
+                scriptedDemo.audioPlaying = true;
+
+                audio.play().catch(e => {
+                    console.log('Audio playback failed:', e);
+                    scriptedDemo.audioPlaying = false;
+                    speechStatus.style.display = 'none';
+                    textarea.value = scriptedDemo.question3Response.text;
+                    updateProgress(currentQuestion);
+                });
+
+                audio.onended = function() {
+                    scriptedDemo.audioPlaying = false;
+                    speechStatus.style.display = 'none';
+                    textarea.value = scriptedDemo.question3Response.text;
+                    updateProgress(currentQuestion);
+                };
+            } else if (scriptedDemo.inVisualDiscussion) {
+                // Handle visual discussions (Questions 4 and 5)
+                setTimeout(() => {
+                    speechStatus.style.display = 'none';
+                    advanceScript();
+                }, 3000);
+            } else {
+                // Handle other questions (e.g., Questions 1 and 2, though not applicable here)
+                setTimeout(() => {
+                    speechStatus.style.display = 'none';
+                    if (!textarea.value.trim()) {
+                        textarea.value = getSampleResponse(currentQuestion);
+                        updateProgress(currentQuestion);
+                    }
+                }, 3000);
+            }
+        }
+
+        // Get sample response for each question
+        function getSampleResponse(questionIndex) {
+            const responses = [
+                "", // Multiple choice doesn't need a sample response
+                "", // Multiple choice doesn't need a sample response
+                "", //
+                "", // Visual discussion handled separately
+                ""  // Visual discussion handled separately
+            ];
+            
+            return responses[questionIndex] || "";
+        }
+    </script>
+</body>
+</html>
