@@ -882,6 +882,33 @@
             inVisualDiscussion: false,
             visualDiscussionStep: 0,
             audioPlaying: false,
+            // Track simplification state for each question
+            simplifiedState: [false, false, false, false, false], // One for each question (0-4)
+
+            // Audio files for each question (original and simplified)
+            questionAudioFiles: [
+                {
+                    original: "media/question_0.mp3", // Question 1: Math
+                    simplified: "media/question_0_s.mp3"
+                },
+                {
+                    original: "media/question_1.mp3", // Question 2: Reading Comprehension
+                    simplified: "media/question_1_s.mp3"
+                },
+                {
+                    original: "media/question_2.mp3", // Question 3: Science
+                    simplified: "media/question_2_s.mp3"
+                },
+                {
+                    original: "media/question_3.mp3", // Question 4: Pattern
+                    simplified: "media/question_3_s.mp3"
+                },
+                {
+                    original: "media/question_4.mp3", // Question 5: Map
+                    simplified: "media/question_4_s.mp3"
+                }
+            ],
+
 
             // New: Predefined response for Question 3
             question3Response: {
@@ -1143,6 +1170,20 @@
 
         // Function to navigate between questions
         function navigateToQuestion(targetIndex) {
+            // Stop any playing audio
+            const audio = document.getElementById('tts-audio');
+            if (scriptedDemo.audioPlaying) {
+                audio.pause();
+                audio.currentTime = 0; // Reset audio to start
+                scriptedDemo.audioPlaying = false;
+
+                // Reset all read-aloud buttons
+                document.querySelectorAll('.read-aloud-btn').forEach(button => {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-volume-up"></i> <span>Read Aloud</span>';
+                });
+            }
+
             // Hide all question cards
             document.querySelectorAll('.question-card').forEach(card => {
                 card.style.display = 'none';
@@ -1196,10 +1237,7 @@
             document.querySelectorAll('.read-aloud-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const questionId = this.getAttribute('data-question-id');
-                    const questionText = document.getElementById(`question-text-${questionId}`).textContent.trim();
-                    
-                    // Simulate audio playback (no actual API call)
-                    simulateTextToSpeech(questionText);
+                    simulateTextToSpeech(questionId);
                 });
             });
         }
@@ -1211,13 +1249,16 @@
                     const parentCard = this.closest('.question-card');
                     const questionTextElement = parentCard.querySelector('.question-text');
                     const originalText = questionTextElement.textContent.trim();
-                    
+                    const questionId = parseInt(this.closest('.question-card').id.split('-')[2]);
+
                     // Only simplify if not already simplified
                     if (!questionTextElement.querySelector('.original-question')) {
                         // Store original text and show simplified version
                         const simplifiedText = getSimplifiedText(originalText);
                         questionTextElement.innerHTML = simplifiedText + 
                             `<div class="original-question">Original: ${originalText}</div>`;
+                        // Set simplified state
+                        scriptedDemo.simplifiedState[questionId] = true;
                     }
                 });
             });
@@ -1355,29 +1396,41 @@
         }
 
         // Simulate text-to-speech (no actual API call)
-        function simulateTextToSpeech(text) {
+        function simulateTextToSpeech(questionId) {
+            const audio = document.getElementById('tts-audio');
+            const questionIndex = parseInt(questionId);
+            const isSimplified = scriptedDemo.simplifiedState[questionIndex];
+            const audioFile = isSimplified ? 
+                scriptedDemo.questionAudioFiles[questionIndex].simplified : 
+                scriptedDemo.questionAudioFiles[questionIndex].original;
+
+            if (!audioFile) {
+                console.log('No audio file found for question:', questionId, 'simplified:', isSimplified);
+                return;
+            }
+
+            // Set audio source and play
+            audio.src = audioFile;
             scriptedDemo.audioPlaying = true;
-            
-            // Create alert to indicate TTS is playing
-            const notification = document.createElement('div');
-            notification.style.position = 'fixed';
-            notification.style.bottom = '20px';
-            notification.style.left = '50%';
-            notification.style.transform = 'translateX(-50%)';
-            notification.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            notification.style.color = 'white';
-            notification.style.padding = '10px 20px';
-            notification.style.borderRadius = '5px';
-            notification.style.zIndex = '1000';
-            notification.innerHTML = '<i class="fas fa-volume-up"></i> Reading question aloud...';
-            
-            document.body.appendChild(notification);
-            
-            // Remove notification after 3 seconds
-            setTimeout(() => {
-                document.body.removeChild(notification);
+
+            // Update button to show it's playing
+            const readAloudButton = document.querySelector(`.read-aloud-btn[data-question-id="${questionId}"]`);
+            readAloudButton.disabled = true;
+            const originalButtonText = readAloudButton.innerHTML;
+            readAloudButton.innerHTML = '<i class="fas fa-pause"></i> <span>Playing...</span>';
+
+            audio.play().catch(e => {
+                console.log('Audio playback failed:', e);
                 scriptedDemo.audioPlaying = false;
-            }, 3000);
+                readAloudButton.disabled = false;
+                readAloudButton.innerHTML = originalButtonText;
+            });
+
+            audio.onended = function() {
+                scriptedDemo.audioPlaying = false;
+                readAloudButton.disabled = false;
+                readAloudButton.innerHTML = originalButtonText;
+            };
         }
 
         // Simulate voice recording
